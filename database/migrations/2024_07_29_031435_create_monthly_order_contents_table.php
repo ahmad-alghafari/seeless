@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('monthly_order_contents', function (Blueprint $table) {
             $table->uuid("id")->primary();
-            // $table->foreignId("monthly_order_id")->constrained("monthly_orders" ,"id")->cascadeOnDelete();
-            $table->foreignUuid("monthly_order_id")->constrained("monthly_orders","id")->cascadeOnDelete();
+            $table->foreignUuid("order_id")->constrained("monthly_orders","id")->cascadeOnDelete();
             $table->foreignId("category_id")->constrained("categories" ,"id")->cascadeOnDelete();
             $table->timestamps();
         });

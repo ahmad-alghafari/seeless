@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string("tamplate_number");
             $table->enum("service_type" , [ 'just_menu_monthly' ,'just_menu_one_year' , 'monthly' ,'per_order' , 'one_year']);
             $table->integer("service_price");
-            $table->enum("state",["run","off"]);
+            $table->enum("status",["run","off"]);
             $table->string("path_website_hero");
             $table->string("path_brand");
             $table->timestamps();

@@ -6,6 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 
 class User extends Authenticatable
 {
@@ -20,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'telephone_number',
+        'mobile_number'
     ];
 
     /**
@@ -44,4 +49,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function resturant()  {
+        return $this->hasOne(Resturant::class);
+    }
+
 }
