@@ -5,10 +5,13 @@ const props = defineProps({
   categories: Array, // Ensure categories is defined as an Array
   food: Object,
 });
+const cart = ref({});
 
-const cart = ref([]);
-const localCategories = ref(categories);
-
+const addToCart = (id) => {
+console.log(id);
+  // cart[id] = categories[id] ;
+// console.log(cart);
+}
 </script>
 <template>
   <section class="food_section layout_padding">
@@ -22,13 +25,13 @@ const localCategories = ref(categories);
 
       <ul class="filters_menu">
         <li class="active" data-filter="*">All</li>
-        <li v-for="cat in props.categories" :key="cat.id" :data-filter="`.${cat.name}`">{{ cat.name }}</li>
+        <li v-for="cat in props.categories" :key="cat.id" :data-filter="`.${cat}`">{{ cat }}</li>
       </ul>
 
       <div class="filters-content">
         <div class="row grid">
           <!-- !-- loop food start -- -->
-          <div v-for="fod in food " :key="fod.id" :class="`col-sm-6 col-lg-4 all `">
+          <div v-for="fod in food " :key="fod.id" :class="`col-sm-6 col-lg-4 all ${props.categories[fod.category_id]} `">
             <div class="box">
               <div>
                 <div class="img-box">
@@ -43,10 +46,10 @@ const localCategories = ref(categories);
                   </p>
                   <div class="options">
                     <h6>
-                      {{ fod.price }} - SR
+                      {{ fod.price }} SR
                     </h6>
-                    <a href="">
-                      <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
+                    <button type="button" v-on:click="addToCart(fod.id)" >
+                      <!-- <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
                         <g>
                           <g>
                             <path d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
@@ -97,8 +100,13 @@ const localCategories = ref(categories);
                         </g>
                         <g>
                         </g>
-                      </svg>
-                    </a>
+                      </svg> -->
+                    add to cart
+                    </button>
+                    
+                  </div>
+                  <div class="options">
+                    {{ fod.availability }}
                   </div>
                 </div>
               </div>

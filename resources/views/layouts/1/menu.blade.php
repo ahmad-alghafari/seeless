@@ -39,7 +39,6 @@
 
 <body class="sub_page">
 
-  
   <script>
     window.resturant_info = @json($resturant_info);
     window.categories = @json($categories);
@@ -53,23 +52,15 @@
 
   
   
-  {{-- <!-- popper js -->
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" 
-  integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
-  </script>
-  <!-- owl slider -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js">
-  </script>
-  <!-- isotope js -->
-  <script src="https://unpkg.com/isotope-layout@3.0.4/dist/isotope.pkgd.min.js"></script>
-  <!-- nice select -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js"></script>
-  <!-- bootstrap js -->
-  <script src="http://127.0.0.1:8000/layouts/1/js/bootstrap.js"></script>
   <!-- jQery -->
   <script src="http://127.0.0.1:8000/layouts/1/js/jquery-3.4.1.min.js"></script>
+
+  <!-- isotope js -->
+  <script src="https://unpkg.com/isotope-layout@3.0.4/dist/isotope.pkgd.min.js"></script>
+
+
   <!-- custom js -->
-  <script src="http://127.0.0.1:8000/layouts/1/js/custom.js"></script> --}}
+  <script src="http://127.0.0.1:8000/layouts/1/js/custom.js"></script>
 
   @vite('resources/js/app.js')
 </body>

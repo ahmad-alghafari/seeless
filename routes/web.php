@@ -19,7 +19,12 @@ Route::get('/menu/{resturantName}', function ($resturantName) {
 
         $food = $resturant_info->Food;
         // ->get(['id','resturant_id','name','price','availability','description','type','discount','path']);
-        $categories = Category::where('resturant_id',$resturant_info->id)->get(['']);
+        $categories_response = Category::where('resturant_id',$resturant_info->id)->get(['id','name']);
+        $categories = [];
+        foreach($categories_response as $cat){
+
+            $categories += [$cat->id => $cat->name]; 
+        }
 
         return view('layouts.'.$resturant_info->tamplate_number.'.menu',compact('resturant_info' , 'categories','food' ));
     }else{
