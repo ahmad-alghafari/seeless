@@ -3,9 +3,9 @@
 use App\Models\Resturant;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/s', function () {
+Route::get('/welcome', function () {
     return view('welcome');
-});
+})->middleware('auth');
 
 
 
@@ -21,6 +21,3 @@ Route::get('/menu/{resturantName}', function ($resturantName) {
 });
 
 Auth::routes();
-
-
-

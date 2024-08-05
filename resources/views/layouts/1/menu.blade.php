@@ -33,7 +33,7 @@
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-  @vite('resources/css/app.css')
+  @vite('resources/css/app.css' , 'resources/js/app.js')
 
 </head>
 
@@ -94,7 +94,7 @@
           <h6>
             $15
           </h6>
-          <a href="">
+          <a href="http://127.0.0.1:8000/menu/about.html">
             <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
               <g>
                 <g>

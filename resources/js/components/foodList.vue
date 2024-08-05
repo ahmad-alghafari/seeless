@@ -2,10 +2,36 @@
 import axios from 'axios';
 import { onMounted  , defineProps , ref} from 'vue';
 
+
 defineProps({
   id :Number ,
 });
+
 const categories = ref([]);
+
+var counter = ref(1);
+
+function increase(index){
+  categories.value[index].counter++;
+};
+
+function decrease(){
+  categories.value[index].counter--;
+  if(counter.value < 1){
+    display_none();
+  }
+};
+var div = document.getElementsByClassName('atTheButtom');
+function display_flex() {
+  for (var i = 0; i < div.length; i++) {
+    div[i].style.display = "flex";
+  }
+};
+function display_none() {
+  for (var i = 0; i < div.length; i++) {
+    div[i].style.display = "none";
+  }
+};
 onMounted( async () => {
     try{
         const response = await axios.get('http://127.0.0.1:8000/api/resturant/1/categories');
@@ -15,7 +41,8 @@ onMounted( async () => {
     }
 } );
 </script>
-<template><section class="food_section layout_padding">
+<template>
+<section class="food_section layout_padding">
   
     <div class="container">
       <div class="heading_container heading_center">
@@ -36,7 +63,7 @@ onMounted( async () => {
         <div class="row grid">
           <!-- loop food start -->
            
-            <div class="col-sm-6 col-lg-4 all pizza" v-for="category in categories " :key="category.id">
+            <div class="col-sm-6 col-lg-4 all pizza" v-for="(category ,index) in categories " :key="category.id">
             <div class="box">
               <div>
                 <div class="img-box">
@@ -53,7 +80,7 @@ onMounted( async () => {
                     <h6>
                       {{ category.price }} - SR
                     </h6>
-                    <a href="">
+                    <a href="#" @click="display_flex">
                       <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
                         <g>
                           <g>
@@ -107,6 +134,16 @@ onMounted( async () => {
                         </g>
                       </svg>
                     </a>
+                    <div class="atTheButtom">
+                      <button type="button" id="minus" @click="decrease(index)">
+                        <i class="fa fa-minus"></i>
+                      </button>
+                 <div class="numOfCate"><h5>{{ counter }}</h5></div>
+                 <button type="button" id="plus" @click="increase(index)">
+                  <i class="fa fa-plus"></i>
+                 </button>
+                 </div>  
+                   
                   </div>
                 </div>
               </div>
