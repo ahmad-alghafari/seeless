@@ -16,7 +16,7 @@ const printCart = () => {
       console.log(`ID: ${id}, Quantity: ${cart.value[id]}`);
     }
   } 
-  console.log('total : ' + total);
+  console.log('total : ' + total.value);
 }
 
 const add_increase = (id) => {
