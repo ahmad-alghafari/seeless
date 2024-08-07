@@ -1,9 +1,9 @@
 <script setup >
 import {defineProps ,onMounted , ref , reactive } from 'vue';
 
-defineProps({
-  id :Number ,
-});
+// defineProps({
+//   id :Number ,
+// });
 
 const categories = ref([]);
 
@@ -42,12 +42,24 @@ const props = defineProps({
   categories: Array, // Ensure categories is defined as an Array
   food: Object,
 });
-const cart = ref({});
+const cart = ref([]);
 
 const addToCart = (id) => {
-console.log(id);
-  // cart[id] = categories[id] ;
-// console.log(cart);
+  if (cart.value[id]) {
+    cart.value[id]++;
+    } else {
+    cart.value[id] = 1;
+  }
+  console.log("cart = " + cart.value[id]);
+}
+
+const Cart = (id) => {
+  if (cart.value[id]) {
+    cart.value[id]++;
+    } else {
+    cart.value[id] = 1;
+  }
+  console.log("cart = " + cart.value[id]);
 }
 </script>
 <template>
@@ -74,7 +86,11 @@ console.log(id);
             <div class="col-sm-6 col-lg-4 all pizza" v-for="category in categories " :key="category.id">
 
           <!-- !-- loop food start -- -->
+
           <div v-for="fod in food " :key="fod.id" :class="`col-sm-6 col-lg-4 all ${props.categories[fod.category_id]} `">
+
+
+          <div v-for="(fod , index) in food " :key="fod.id" :class="`col-sm-6 col-lg-4 all ${props.categories[fod.category_id]} `">
 
             <div class="box">
               <div>
@@ -93,9 +109,13 @@ console.log(id);
                       {{ fod.price }} SR
                     </h6>
 
+
                     <!-- <a href="#" @click="display_flex"> -->
 
                     <button type="button" v-on:click="addToCart(fod.id)" >
+
+                    <button type="button" v-on:click="addToCart(index)" >
+
                       <!-- <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
 
                         <g>
@@ -165,6 +185,7 @@ console.log(id);
                       </svg> -->
                     add to cart
                     </button>
+                    </button>
                     
                   </div>
                   <div class="options">
@@ -180,7 +201,7 @@ console.log(id);
       </div>
     </div>
     </div>
-
+</div>
   </section>  
   </template>
 
