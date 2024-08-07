@@ -35,13 +35,13 @@ const decreaseQuantity = (id) => {
   }else if(cart.value[id] == 1){
     delete cart.value[id];
   }
-  total -= props.food[id]['price'];
+  total.value -= props.food[id]['price'];
   printCart();
 }
 
 const deleteAllquantity = (id) => {
   if(cart.value[id]){
-    total -= props.food[id]['price'] * cart.value[id] ;
+    total.value -= props.food[id]['price'] * cart.value[id] ;
     delete cart.value[id];
   }
   printCart();
@@ -49,6 +49,7 @@ const deleteAllquantity = (id) => {
 
 const deleteCartContents = () => {
   cart.value = {};
+  total.value = 0 ;
   printCart();
 };
 
