@@ -1,9 +1,9 @@
-<script setup >
+<!-- <script setup >
 import {defineProps ,onMounted , ref , reactive } from 'vue';
 
-// defineProps({
-//   id :Number ,
-// });
+defineProps({
+  id :Number ,
+});
 
 const categories = ref([]);
 
@@ -19,17 +19,21 @@ function decrease(){
     display_none();
   }
 };
+
 var div = document.getElementsByClassName('atTheButtom');
 function display_flex() {
   for (var i = 0; i < div.length; i++) {
     div[i].style.display = "flex";
   }
 };
+
+
 function display_none() {
   for (var i = 0; i < div.length; i++) {
     div[i].style.display = "none";
   }
 };
+
 onMounted( async () => {
     try{
         const response = await axios.get('http://127.0.0.1:8000/api/resturant/1/categories');
@@ -39,33 +43,128 @@ onMounted( async () => {
     }
 } );
 const props = defineProps({
-  categories: Array, // Ensure categories is defined as an Array
+  categories: Object, // Ensure categories is defined as an Array
   food: Object,
+  id :Number
 });
+
+
 const cart = ref([]);
 
-const addToCart = (id) => {
-  if (cart.value[id]) {
-    cart.value[id]++;
-    } else {
-    cart.value[id] = 1;
-  }
-  console.log("cart = " + cart.value[id]);
+const printCart = () => {
+  console.log("Cart Contents:");
+  for (const id in cart.value) {
+    if (cart.value.hasOwnProperty(id)) {
+      console.log(`ID: ${id}, Quantity: ${cart.value[id]}`);
+    }
+  } 
 }
 
-const Cart = (id) => {
+const add_increase = (id) => {
   if (cart.value[id]) {
     cart.value[id]++;
     } else {
     cart.value[id] = 1;
   }
-  console.log("cart = " + cart.value[id]);
+  printCart();
+}
+
+const decreaseQuantity = (id) => {
+  if(cart.value[id] > 1 ){
+    cart.value[id]--;
+  }else if(cart.value[id] == 1){
+    delete cart.value[id];
+  }
+  printCart();
+}
+
+const deleteAllquantity = (id) => {
+  delete cart.value[id];
+  printCart();
+}
+
+const isAdded = (id) => {
+  if(cart.value[id]){
+    return true ;
+  }else{
+    return false;
+  }
+}
+
+const isEmpty = () => {
+  if(cart.value.length == 0){ 
+    return true ;
+  }else{
+    return false;
+  }
+}
+</script> -->
+<script setup >
+import {defineProps ,onMounted , ref , reactive } from 'vue';
+
+const props = defineProps({
+  categories: Object, // Ensure categories is defined as an Array
+  food: Object,
+});
+
+
+const cart = ref([]);
+
+const printCart = () => {
+  console.log("Cart Contents:");
+  for (const id in cart.value) {
+    if (cart.value.hasOwnProperty(id)) {
+      console.log(`ID: ${id}, Quantity: ${cart.value[id]}`);
+    }
+  } 
+}
+
+const add_increase = (id) => {
+  if (cart.value[id]) {
+    cart.value[id]++;
+    } else {
+    cart.value[id] = 1;
+  }
+  printCart();
+}
+
+const decreaseQuantity = (id) => {
+  if(cart.value[id] > 1 ){
+    cart.value[id]--;
+  }else if(cart.value[id] == 1){
+    delete cart.value[id];
+  }
+  printCart();
+}
+
+const deleteAllquantity = (id) => {
+  delete cart.value[id];
+  printCart();
+}
+
+const deleteCartContents = () => {
+  cart.value = {};
+  printCart();
+};
+
+const isAdded = (id) => {
+  if(cart.value[id]){
+    return true ;
+  }else{
+    return false;
+  }
+}
+
+const isEmpty = () => {
+  if(cart.value.length == 0){ 
+    return true ;
+  }else{
+    return false;
+  }
 }
 </script>
 <template>
 <section class="food_section layout_padding">
-
-
     <div class="container">
       <div class="heading_container heading_center">
         <h2>
@@ -75,7 +174,7 @@ const Cart = (id) => {
 
       <ul class="filters_menu">
         <li class="active" data-filter="*">All</li>
-        <li v-for="cat in props.categories" :key="cat.id" :data-filter="`.${cat}`">{{ cat }}</li>
+        <li v-for="cat in props.categories" :key="cat.index" :data-filter="`.${cat}`">{{ cat }}</li>
       </ul>
 
       <div class="filters-content">
@@ -105,9 +204,13 @@ const Cart = (id) => {
                     {{ fod.description }}
                   </p>
                   <div class="options">
+                    {{ fod.availability }}
+                  </div>
+                  <div >
                     <h6>
                       {{ fod.price }} SR
                     </h6>
+
 
 
                     <!-- <a href="#" @click="display_flex"> -->
@@ -180,8 +283,6 @@ const Cart = (id) => {
                   <i class="fa fa-plus"></i>
                  </button>
                  </div>  
-                   
-
                       </svg> -->
                     add to cart
                     </button>
@@ -192,6 +293,21 @@ const Cart = (id) => {
                     {{ fod.availability }}
 
                   </div>
+
+                    <button type="button" @click="add_increase(index)" >
+                      
+                    add to cart
+                    </button>
+                    <button type="button" @click="add_increase(index)" >
+                      increase 
+                    </button>
+                    <button type="button" @click="deleteAllquantity(index)" >
+                      delete 
+                    </button>
+                    <button type="button" @click="decreaseQuantity(index)" >
+                      decrease
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -201,7 +317,77 @@ const Cart = (id) => {
       </div>
     </div>
     </div>
-</div>
-  </section>  
-  </template>
+    
+  <button  type="button" class="floating-button btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Cart</button>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Cart Contents</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table  class="table table-striped">
+            <thead>
+              <tr>
+                <th>test</th>
+                <th>Food Name</th>
+                <th>Number</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="id in cart" :key="id">
+                <td>{{ id }}</td>
+                <td>{{ props.food[id].name }}</td>
+                <td>{{ cart[id] }}</td>
+                <td>{{ props.food[id].price }}</td>
+                <td>{{ cart[id] * props.food[id].price }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" >Delete Contents</button>
+          <button type="button" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</template>
+
+
+
+<style>
+.floating-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+@media (max-width: 600px) {
+  .floating-button {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    bottom: 15px;
+    right: 15px;
+  }
+}
+</style>
 

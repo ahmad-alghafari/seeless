@@ -27,3 +27,4 @@ onMounted(() => {
     <foodList  :food="food" :categories="categories"/>
     <foter/>
 </template>
+
