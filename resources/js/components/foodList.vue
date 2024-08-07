@@ -1,7 +1,5 @@
-<script setup>
-import axios from 'axios';
-import { onMounted  , defineProps , ref} from 'vue';
-
+<script setup >
+import {defineProps ,onMounted , ref , reactive } from 'vue';
 
 defineProps({
   id :Number ,
@@ -40,30 +38,44 @@ onMounted( async () => {
       console.log("error , can not fetch data api!");
     }
 } );
+const props = defineProps({
+  categories: Array, // Ensure categories is defined as an Array
+  food: Object,
+});
+const cart = ref({});
+
+const addToCart = (id) => {
+console.log(id);
+  // cart[id] = categories[id] ;
+// console.log(cart);
+}
 </script>
 <template>
 <section class="food_section layout_padding">
-  
+
+
     <div class="container">
       <div class="heading_container heading_center">
         <h2>
-          Our Menu
+          Our Menu 
         </h2>
       </div>
 
       <ul class="filters_menu">
         <li class="active" data-filter="*">All</li>
-        <li data-filter=".burger">Burger</li>
-        <li data-filter=".pizza">Pizza</li>
-        <li data-filter=".pasta">Pasta</li>
-        <li data-filter=".fries">Fries</li>
+        <li v-for="cat in props.categories" :key="cat.id" :data-filter="`.${cat}`">{{ cat }}</li>
       </ul>
 
       <div class="filters-content">
         <div class="row grid">
+
           <!-- loop food start -->
            
-            <div class="col-sm-6 col-lg-4 all pizza" v-for="(category ,index) in categories " :key="category.id">
+            <div class="col-sm-6 col-lg-4 all pizza" v-for="category in categories " :key="category.id">
+
+          <!-- !-- loop food start -- -->
+          <div v-for="fod in food " :key="fod.id" :class="`col-sm-6 col-lg-4 all ${props.categories[fod.category_id]} `">
+
             <div class="box">
               <div>
                 <div class="img-box">
@@ -71,17 +83,21 @@ onMounted( async () => {
                 </div>
                 <div class="detail-box">
                   <h5>
-                    {{ category.name }}
+                    {{ fod.name }}
                   </h5>
                   <p>
-                    {{ category.description }}
+                    {{ fod.description }}
                   </p>
                   <div class="options">
                     <h6>
-                      {{ category.price }} - SR
+                      {{ fod.price }} SR
                     </h6>
-                    <a href="#" @click="display_flex">
-                      <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
+
+                    <!-- <a href="#" @click="display_flex"> -->
+
+                    <button type="button" v-on:click="addToCart(fod.id)" >
+                      <!-- <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
+
                         <g>
                           <g>
                             <path d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
@@ -132,6 +148,7 @@ onMounted( async () => {
                         </g>
                         <g>
                         </g>
+
                       </svg>
                     </a>
                     <div class="atTheButtom">
@@ -144,20 +161,26 @@ onMounted( async () => {
                  </button>
                  </div>  
                    
+
+                      </svg> -->
+                    add to cart
+                    </button>
+                    
+                  </div>
+                  <div class="options">
+                    {{ fod.availability }}
+
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <!-- loop food end -->
-
+          <!-- !-- loop food end -- -->
         </div>
       </div>
-      <div class="btn-box">
-        <a href="">
-          View More
-        </a>
-      </div>
     </div>
-  </section>
+    </div>
+
+  </section>  
   </template>
+

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('order_contents', function (Blueprint $table) {
             $table->uuid("id")->primary();
             $table->foreignUuid("order_id")->constrained("orders","id")->cascadeOnDelete();
-            $table->foreignId("category_id")->constrained("categories" ,"id")->cascadeOnDelete();
+            $table->foreignId("food_id")->constrained("foods" ,"id")->cascadeOnDelete();
             $table->timestamps();
 
             

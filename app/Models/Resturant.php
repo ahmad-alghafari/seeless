@@ -22,6 +22,10 @@ class Resturant extends Model
         return $this->HasMany(Category::class);
     }
 
+    public function Food() : HasMany{
+        return $this->HasMany(Food::class);
+    }
+
     public function Qrcode() : HasMany{
         return $this->HasMany(Qrcodeimage::class);
     }
