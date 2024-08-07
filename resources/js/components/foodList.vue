@@ -1,170 +1,91 @@
-<!-- <script setup >
-import {defineProps ,onMounted , ref , reactive } from 'vue';
 
-defineProps({
-  id :Number ,
+<script setup >
+import {defineProps  , ref  } from 'vue';
+
+const props = defineProps({
+  categories: Object, // Ensure categories is defined as an Array
+  food: Object,
 });
 
-const categories = ref([]);
 
+const cart = ref([]);
+
+// const printCart = () => {
+//   console.log("Cart Contents:");
+//   for (const id in cart.value) {
+//     if (cart.value.hasOwnProperty(id)) {
+//       console.log(`ID: ${id}, Quantity: ${cart.value[id]}`);
+//     }
+//   } 
+
+// }
+// const increase = (id) => {
+//   if (cart.value[id]) {
+//     cart.value[id]++;
+//     } else {
+//       cart.value[id] = 1;
+//     }
+  
+// }
 var counter = ref(1);
 
-function increase(index){
-  categories.value[index].counter++;
-};
 
-function decrease(){
-  categories.value[index].counter--;
-  if(counter.value < 1){
-    display_none();
+function increase(id){
+  if (this.cart.value[id]) {
+        counter++;
+      }
+      counter = 1;
+      
+}
+
+   
+const decrease = (id) => {
+  if(cart.value[id] > 1 ){
+    cart.value[id]--;
+  }else if(cart.value[id] == 1){
+    
   }
-};
+  
+}
 
+// const deleteAllquantity = (id) => {
+//   delete cart.value[id];
+//   printCart();
+// }
+
+// const deleteCartContents = () => {
+//   cart.value = {};
+//   printCart();
+// };
+
+// const isAdded = (id) => {
+//   if(cart.value[id]){
+//     return true ;
+//   }else{
+//     return false;
+//   }
+// }
+
+// const isEmpty = () => {
+//   if(cart.value.length == 0){ 
+//     return true ;
+//   }else{
+//     return false;
+//   }
+// }
+// ghena
 var div = document.getElementsByClassName('atTheButtom');
-function display_flex() {
-  for (var i = 0; i < div.length; i++) {
+function display_flex(id) {
+  if(this.cart.value[id]){
+    for (var i = 0; i < div.length; i++) {
     div[i].style.display = "flex";
-  }
+  }}
+  div[i].style.display = "block";
+  
 };
-
-
-function display_none() {
-  for (var i = 0; i < div.length; i++) {
-    div[i].style.display = "none";
-  }
-};
-
-onMounted( async () => {
-    try{
-        const response = await axios.get('http://127.0.0.1:8000/api/resturant/1/categories');
-        categories.value = response.data;
-    }catch{
-      console.log("error , can not fetch data api!");
-    }
-} );
-const props = defineProps({
-  categories: Object, // Ensure categories is defined as an Array
-  food: Object,
-  id :Number
-});
-
-
-const cart = ref([]);
-
-const printCart = () => {
-  console.log("Cart Contents:");
-  for (const id in cart.value) {
-    if (cart.value.hasOwnProperty(id)) {
-      console.log(`ID: ${id}, Quantity: ${cart.value[id]}`);
-    }
-  } 
-}
-
-const add_increase = (id) => {
-  if (cart.value[id]) {
-    cart.value[id]++;
-    } else {
-    cart.value[id] = 1;
-  }
-  printCart();
-}
-
-const decreaseQuantity = (id) => {
-  if(cart.value[id] > 1 ){
-    cart.value[id]--;
-  }else if(cart.value[id] == 1){
-    delete cart.value[id];
-  }
-  printCart();
-}
-
-const deleteAllquantity = (id) => {
-  delete cart.value[id];
-  printCart();
-}
-
-const isAdded = (id) => {
-  if(cart.value[id]){
-    return true ;
-  }else{
-    return false;
-  }
-}
-
-const isEmpty = () => {
-  if(cart.value.length == 0){ 
-    return true ;
-  }else{
-    return false;
-  }
-}
-</script> -->
-<script setup >
-import {defineProps ,onMounted , ref , reactive } from 'vue';
-
-const props = defineProps({
-  categories: Object, // Ensure categories is defined as an Array
-  food: Object,
-});
-
-
-const cart = ref([]);
-
-const printCart = () => {
-  console.log("Cart Contents:");
-  for (const id in cart.value) {
-    if (cart.value.hasOwnProperty(id)) {
-      console.log(`ID: ${id}, Quantity: ${cart.value[id]}`);
-    }
-  } 
-}
-
-const add_increase = (id) => {
-  if (cart.value[id]) {
-    cart.value[id]++;
-    } else {
-    cart.value[id] = 1;
-  }
-  printCart();
-}
-
-const decreaseQuantity = (id) => {
-  if(cart.value[id] > 1 ){
-    cart.value[id]--;
-  }else if(cart.value[id] == 1){
-    delete cart.value[id];
-  }
-  printCart();
-}
-
-const deleteAllquantity = (id) => {
-  delete cart.value[id];
-  printCart();
-}
-
-const deleteCartContents = () => {
-  cart.value = {};
-  printCart();
-};
-
-const isAdded = (id) => {
-  if(cart.value[id]){
-    return true ;
-  }else{
-    return false;
-  }
-}
-
-const isEmpty = () => {
-  if(cart.value.length == 0){ 
-    return true ;
-  }else{
-    return false;
-  }
-}
 </script>
 <template>
-<section class="food_section layout_padding">
+  <section class="food_section layout_padding">
     <div class="container">
       <div class="heading_container heading_center">
         <h2>
@@ -179,18 +100,8 @@ const isEmpty = () => {
 
       <div class="filters-content">
         <div class="row grid">
-
-          <!-- loop food start -->
-           
-            <div class="col-sm-6 col-lg-4 all pizza" v-for="category in categories " :key="category.id">
-
           <!-- !-- loop food start -- -->
-
           <div v-for="fod in food " :key="fod.id" :class="`col-sm-6 col-lg-4 all ${props.categories[fod.category_id]} `">
-
-
-          <div v-for="(fod , index) in food " :key="fod.id" :class="`col-sm-6 col-lg-4 all ${props.categories[fod.category_id]} `">
-
             <div class="box">
               <div>
                 <div class="img-box">
@@ -203,98 +114,83 @@ const isEmpty = () => {
                   <p>
                     {{ fod.description }}
                   </p>
-                  <div class="options">
+                  <p>
                     {{ fod.availability }}
-                  </div>
-                  <div >
+                  </p>
+                    
+                    <div class="options">
                     <h6>
                       {{ fod.price }} SR
                     </h6>
-
-
-
-                    <!-- <a href="#" @click="display_flex"> -->
-
-                    <button type="button" v-on:click="addToCart(fod.id)" >
-
-                    <button type="button" v-on:click="addToCart(index)" >
-
-                      <!-- <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
-
-                        <g>
-                          <g>
-                            <path d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                         c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z" />
-                          </g>
-                        </g>
-                        <g>
-                          <g>
-                            <path d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                         C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                         c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                         C457.728,97.71,450.56,86.958,439.296,84.91z" />
-                          </g>
-                        </g>
-                        <g>
-                          <g>
-                            <path d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                         c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z" />
-                          </g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-                        <g>
-                        </g>
-
-                      </svg>
-                    </a>
-                    <div class="atTheButtom">
-                      <button type="button" id="minus" @click="decrease(index)">
+                    <!-- icon start -->
+                    
+                    <a class="cart_link" href="#" @click="display_flex(fod.id)">
+                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
+                  <g>
+                    <g>
+                      <path d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
+                   c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z" />
+                    </g>
+                  </g>
+                  <g>
+                    <g>
+                      <path d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
+                   C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
+                   c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
+                   C457.728,97.71,450.56,86.958,439.296,84.91z" />
+                    </g>
+                  </g>
+                  <g>
+                    <g>
+                      <path d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
+                   c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z" />
+                    </g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                  <g>
+                  </g>
+                </svg>
+              </a>
+                     <!-- icon end -->
+                      <!-- at the bottom start -->
+                      <div class="atTheButtom">
+                      <button type="button" id="minus" @click="decrease(fod.id)">
                         <i class="fa fa-minus"></i>
                       </button>
-                 <div class="numOfCate"><h5>{{ counter }}</h5></div>
-                 <button type="button" id="plus" @click="increase(index)">
-                  <i class="fa fa-plus"></i>
-                 </button>
-                 </div>  
-                      </svg> -->
-                    add to cart
-                    </button>
-                    </button>
-                    
-                  </div>
-                  <div class="options">
-                    {{ fod.availability }}
-
-                  </div>
-
-                    <button type="button" @click="add_increase(index)" >
+                      <div class="numOfCate"><h5>{{ counter[fod.id] || 1 }}</h5></div>
+                      <button type="button" id="plus" @click="increase(fod.id)">
+                        <i class="fa fa-plus"></i>
+                      </button>
+                    </div> 
+                       <!-- at the bottom end -->
+                    <!-- <button type="button" @click="add_increase(index)" >
                       
                     add to cart
                     </button>
@@ -306,8 +202,10 @@ const isEmpty = () => {
                     </button>
                     <button type="button" @click="decreaseQuantity(index)" >
                       decrease
-                    </button>
+                    </button> -->
                   </div>
+                  
+                  
                 </div>
               </div>
             </div>
@@ -316,8 +214,7 @@ const isEmpty = () => {
         </div>
       </div>
     </div>
-    </div>
-    
+  </section>  
   <button  type="button" class="floating-button btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Cart</button>
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -327,6 +224,7 @@ const isEmpty = () => {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          
           <table  class="table table-striped">
             <thead>
               <tr>
@@ -338,8 +236,8 @@ const isEmpty = () => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="id in cart" :key="id">
-                <td>{{ id }}</td>
+                <tr v-for="id in cart" :key="id">
+                  <td>{{ id }}</td>
                 <td>{{ props.food[id].name }}</td>
                 <td>{{ cart[id] }}</td>
                 <td>{{ props.food[id].price }}</td>
@@ -349,13 +247,12 @@ const isEmpty = () => {
           </table>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" >Delete Contents</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents">Delete Contents</button>
           <button type="button" class="btn btn-primary">Submit</button>
         </div>
       </div>
     </div>
   </div>
-</section>
 </template>
 
 
@@ -390,4 +287,3 @@ const isEmpty = () => {
   }
 }
 </style>
-
