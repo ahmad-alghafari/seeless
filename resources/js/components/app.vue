@@ -5,7 +5,7 @@ import foter from "./foter.vue";
 import navBar from "./navBar.vue";
 
 const resturant_info = ref({});
-const categories = ref([]);
+const categories = ref({});
 const food = ref({});
 
 onMounted(() => {

@@ -8,6 +8,7 @@ const props = defineProps({
 });
 
 
+
 const cart = ref([]);
 
 // const printCart = () => {
@@ -40,11 +41,37 @@ function increase(id){
 
    
 const decrease = (id) => {
+
+const cart = ref({});
+const total = ref(0);
+const printCart = () => {
+  console.log("Cart Contsents:");
+  for (const id in cart.value) {
+    if (cart.value.hasOwnProperty(id)) {
+      console.log(`ID: ${id}, Quantity: ${cart.value[id]}`);
+    }
+  } 
+  console.log('total : ' + total.value);
+}
+
+const add_increase = (id) => {
+  if (cart.value[id]) {
+    cart.value[id]++;
+    } else {
+    cart.value[id] = 1;
+  }
+  total.value  += props.food[id]['price'];
+  printCart();
+}
+
+const decreaseQuantity = (id) => {
+
   if(cart.value[id] > 1 ){
     cart.value[id]--;
   }else if(cart.value[id] == 1){
     
   }
+
   
 }
 
@@ -80,9 +107,43 @@ function display_flex(id) {
     for (var i = 0; i < div.length; i++) {
     div[i].style.display = "flex";
   }}
-  div[i].style.display = "block";
   
 };
+
+  total -= props.food[id]['price'];
+  printCart();
+}
+
+const deleteAllquantity = (id) => {
+  if(cart.value[id]){
+    total -= props.food[id]['price'] * cart.value[id] ;
+    delete cart.value[id];
+  }
+  printCart();
+}
+
+const deleteCartContents = () => {
+  cart.value = {};
+  printCart();
+};
+
+const isAdded = (id) => {
+  if(cart.value[id]){
+    return true ;
+  }else{
+    return false;
+  }
+}
+
+const isEmpty = () => {
+  if(cart.value.length == 0){ 
+    return true ;
+  }else{
+    return false;
+  }
+}
+
+
 </script>
 <template>
   <section class="food_section layout_padding">
@@ -122,6 +183,7 @@ function display_flex(id) {
                     <h6>
                       {{ fod.price }} SR
                     </h6>
+
                     <!-- icon start -->
                     
                     <a class="cart_link" href="#" @click="display_flex(fod.id)">
@@ -192,15 +254,18 @@ function display_flex(id) {
                        <!-- at the bottom end -->
                     <!-- <button type="button" @click="add_increase(index)" >
                       
+=======
+                    <button type="button" @click="add_increase(fod.id)" >
+>>>>>>> b58861a445bcec025942904edbf905084136127e
                     add to cart
                     </button>
-                    <button type="button" @click="add_increase(index)" >
+                    <button type="button" @click="add_increase(fod.id)" >
                       increase 
                     </button>
-                    <button type="button" @click="deleteAllquantity(index)" >
+                    <button type="button" @click="deleteAllquantity(fod.id)" >
                       delete 
                     </button>
-                    <button type="button" @click="decreaseQuantity(index)" >
+                    <button type="button" @click="decreaseQuantity(fod.id)" >
                       decrease
                     </button> -->
                   </div>
@@ -210,18 +275,18 @@ function display_flex(id) {
               </div>
             </div>
           </div>
-          <!-- !-- loop food end -- -->
+          <!-- !-- loop food essnd -- -->
         </div>
       </div>
     </div>
   </section>  
-  <button  type="button" class="floating-button btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Cart</button>
+  <button  type="button" class="floating-button btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">Cart</button>
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="exampleModalLabel">Cart Contents</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <!-- <button type="b,utton" classs="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button> -->
         </div>
         <div class="modal-body">
           
@@ -236,6 +301,7 @@ function display_flex(id) {
               </tr>
             </thead>
             <tbody>
+<<<<<<< HEAD
                 <tr v-for="id in cart" :key="id">
                   <td>{{ id }}</td>
                 <td>{{ props.food[id].name }}</td>
@@ -243,10 +309,24 @@ function display_flex(id) {
                 <td>{{ props.food[id].price }}</td>
                 <td>{{ cart[id] * props.food[id].price }}</td>
               </tr>
+=======
+              <tr v-for="(quantity, id) in cart" :key="id" >
+                <td>{{ id }}</td>
+                <td>{{ props.food[id]['name'] }}</td>
+                <td>{{ quantity }}</td>
+                <td>{{ props.food[id]['price'] }}</td>
+                <td>{{ quantity * props.food[id]['price']}}</td>
+               </tr> 
+>>>>>>> b58861a445bcec025942904edbf905084136127e
             </tbody>
           </table>
+          <p>Total Invoice Value : {{ total }}</p>
         </div>
         <div class="modal-footer">
+<<<<<<< HEAD
+=======
+          <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >Cansel</button>
+>>>>>>> b58861a445bcec025942904edbf905084136127e
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents">Delete Contents</button>
           <button type="button" class="btn btn-primary">Submit</button>
         </div>
