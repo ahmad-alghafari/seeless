@@ -14,3 +14,7 @@ Route::get('/resturant/{id}/categories',function($id){
     ->get(['id','resturant_id','name','price','availability','description','type','discount','path']);
     return response()->json($categories);
 });
+
+Route::post('/resturant/order', function(Request $request){
+    
+});

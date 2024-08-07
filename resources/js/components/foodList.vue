@@ -7,15 +7,16 @@ const props = defineProps({
 });
 
 
-const cart = ref([]);
-
+const cart = ref({});
+const total = ref(0);
 const printCart = () => {
-  console.log("Cart Contents:");
+  console.log("Cart Contsents:");
   for (const id in cart.value) {
     if (cart.value.hasOwnProperty(id)) {
       console.log(`ID: ${id}, Quantity: ${cart.value[id]}`);
     }
   } 
+  console.log('total : ' + total);
 }
 
 const add_increase = (id) => {
@@ -24,6 +25,7 @@ const add_increase = (id) => {
     } else {
     cart.value[id] = 1;
   }
+  total.value  += props.food[id]['price'];
   printCart();
 }
 
@@ -33,13 +35,22 @@ const decreaseQuantity = (id) => {
   }else if(cart.value[id] == 1){
     delete cart.value[id];
   }
+  total -= props.food[id]['price'];
   printCart();
 }
 
 const deleteAllquantity = (id) => {
-  delete cart.value[id];
+  if(cart.value[id]){
+    total -= props.food[id]['price'] * cart.value[id] ;
+    delete cart.value[id];
+  }
   printCart();
 }
+
+const deleteCartContents = () => {
+  cart.value = {};
+  printCart();
+};
 
 const isAdded = (id) => {
   if(cart.value[id]){
@@ -56,11 +67,6 @@ const isEmpty = () => {
     return false;
   }
 }
-
-
-
-
-
 
 </script>
 <template>
@@ -101,17 +107,16 @@ const isEmpty = () => {
                     <h6>
                       {{ fod.price }} SR
                     </h6>
-                    <button type="button" @click="add_increase(index)" >
-                      
+                    <button type="button" @click="add_increase(fod.id)" >
                     add to cart
                     </button>
-                    <button type="button" @click="add_increase(index)" >
+                    <button type="button" @click="add_increase(fod.id)" >
                       increase 
                     </button>
-                    <button type="button" @click="deleteAllquantity(index)" >
+                    <button type="button" @click="deleteAllquantity(fod.id)" >
                       delete 
                     </button>
-                    <button type="button" @click="decreaseQuantity(index)" >
+                    <button type="button" @click="decreaseQuantity(fod.id)" >
                       decrease
                     </button>
                     
@@ -121,18 +126,18 @@ const isEmpty = () => {
               </div>
             </div>
           </div>
-          <!-- !-- loop food end -- -->
+          <!-- !-- loop food essnd -- -->
         </div>
       </div>
     </div>
   </section>  
-  <button  type="button" class="floating-button btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Cart</button>
+  <button  type="button" class="floating-button btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">Cart</button>
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="exampleModalLabel">Cart Contents</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <!-- <button type="b,utton" classs="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button> -->
         </div>
         <div class="modal-body">
           
@@ -147,18 +152,20 @@ const isEmpty = () => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="id in cart" :key="id">
+              <tr v-for="(quantity, id) in cart" :key="id" >
                 <td>{{ id }}</td>
-                <td>{{ props.food[id].name }}</td>
-                <td>{{ cart[id] }}</td>
-                <td>{{ props.food[id].price }}</td>
-                <td>{{ cart[id] * props.food[id].price }}</td>
-              </tr>
+                <td>{{ props.food[id]['name'] }}</td>
+                <td>{{ quantity }}</td>
+                <td>{{ props.food[id]['price'] }}</td>
+                <td>{{ quantity * props.food[id]['price']}}</td>
+               </tr> 
             </tbody>
           </table>
+          <p>Total Invoice Value : {{ total }}</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="delete">Delete Contents</button>
+          <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >Cansel</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents">Delete Contents</button>
           <button type="button" class="btn btn-primary">Submit</button>
         </div>
       </div>

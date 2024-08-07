@@ -17,12 +17,15 @@ Route::get('/menu/{resturantName}', function ($resturantName) {
     // $categories_api = env('APP_URL') . ':'.'8000' . '/api/resturant/'. $resturant_info->id . '/categories';
     if($resturant_info->status == "run"){
 
-        $food = $resturant_info->Food;
-        // ->get(['id','resturant_id','name','price','availability','description','type','discount','path']);
+        $food_response = $resturant_info->Food;
+        $food = [] ;
+        foreach($food_response as $fo){
+            $food += [$fo->id => $fo];
+        }
+
         $categories_response = Category::where('resturant_id',$resturant_info->id)->get(['id','name']);
         $categories = [];
         foreach($categories_response as $cat){
-
             $categories += [$cat->id => $cat->name]; 
         }
 
