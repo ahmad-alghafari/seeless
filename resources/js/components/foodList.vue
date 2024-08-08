@@ -28,16 +28,7 @@ const cart = ref([]);
 //     }
   
 // }
-var counter = ref(1);
 
-
-function increase(id){
-  if (this.cart.value[id]) {
-        counter++;
-      }
-      counter = 1;
-      
-}
 
    
 const decrease = (id) => {
@@ -100,19 +91,7 @@ const decreaseQuantity = (id) => {
 //     return false;
 //   }
 // }
-// ghena
-var div = document.getElementsByClassName('atTheButtom');
-function display_flex(id) {
-  if(this.cart.value[id]){
-    for (var i = 0; i < div.length; i++) {
-    div[i].style.display = "flex";
-  }}
-  
-};
 
-  total -= props.food[id]['price'];
-  printCart();
-}
 
 const deleteAllquantity = (id) => {
   if(cart.value[id]){
@@ -142,8 +121,6 @@ const isEmpty = () => {
     return false;
   }
 }
-
-
 </script>
 <template>
   <section class="food_section layout_padding">
@@ -254,9 +231,9 @@ const isEmpty = () => {
                        <!-- at the bottom end -->
                     <!-- <button type="button" @click="add_increase(index)" >
                       
-=======
+
                     <button type="button" @click="add_increase(fod.id)" >
->>>>>>> b58861a445bcec025942904edbf905084136127e
+
                     add to cart
                     </button>
                     <button type="button" @click="add_increase(fod.id)" >
@@ -301,7 +278,7 @@ const isEmpty = () => {
               </tr>
             </thead>
             <tbody>
-<<<<<<< HEAD
+
                 <tr v-for="id in cart" :key="id">
                   <td>{{ id }}</td>
                 <td>{{ props.food[id].name }}</td>
@@ -309,7 +286,7 @@ const isEmpty = () => {
                 <td>{{ props.food[id].price }}</td>
                 <td>{{ cart[id] * props.food[id].price }}</td>
               </tr>
-=======
+
               <tr v-for="(quantity, id) in cart" :key="id" >
                 <td>{{ id }}</td>
                 <td>{{ props.food[id]['name'] }}</td>
@@ -323,10 +300,10 @@ const isEmpty = () => {
           <p>Total Invoice Value : {{ total }}</p>
         </div>
         <div class="modal-footer">
-<<<<<<< HEAD
-=======
+
+
           <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >Cansel</button>
->>>>>>> b58861a445bcec025942904edbf905084136127e
+
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents">Delete Contents</button>
           <button type="button" class="btn btn-primary">Submit</button>
         </div>
