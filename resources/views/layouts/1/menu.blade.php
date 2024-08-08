@@ -43,7 +43,7 @@
     window.resturant_info = @json($resturant_info);
     window.categories = @json($categories);
     window.food = @json($food);
-
+    window.tableNumber = {{$tableNumber}} ; 
   </script>
 
   <div id="app" >

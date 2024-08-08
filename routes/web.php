@@ -20,7 +20,7 @@ Route::get('/', function () {
 
 
 
-Route::get('/menu/{resturantName}', function ($resturantName) {
+Route::get('/menu/{resturantName}/{tableNumber}', function ($resturantName , $tableNumber) {
     $resturant_info = Resturant::where('name' ,$resturantName)->first();
     // $categories_api = env('APP_URL') . ':'.'8000' . '/api/resturant/'. $resturant_info->id . '/categories';
     if($resturant_info->status == "run"){
@@ -37,7 +37,7 @@ Route::get('/menu/{resturantName}', function ($resturantName) {
             $categories += [$cat->id => $cat->name]; 
         }
 
-        return view('layouts.'.$resturant_info->tamplate_number.'.menu',compact('resturant_info' , 'categories','food' ));
+        return view('layouts.'.$resturant_info->tamplate_number.'.menu',compact('resturant_info' , 'categories','food' , 'tableNumber'));
     }else{
         return "404 , the web is off";
     }

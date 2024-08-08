@@ -16,5 +16,8 @@ Route::get('/resturant/{id}/categories',function($id){
 });
 
 Route::post('/resturant/order', function(Request $request){
-    
+    return response()->json([
+        'added' 
+    ]); 
 });
+
