@@ -1,14 +1,19 @@
+
 <script setup >
-import {defineProps ,onMounted , ref , reactive } from 'vue';
+import axios from 'axios';
+import {defineProps  , ref  } from 'vue';
 
 const props = defineProps({
   categories: Object, // Ensure categories is defined as an Array
   food: Object,
+  resturantId : Number,
+  tableNumber : Number
 });
 
 
 const cart = ref({});
 const total = ref(0);
+
 const printCart = () => {
   console.log("Cart Contsents:");
   for (const id in cart.value) {
@@ -51,7 +56,40 @@ const deleteCartContents = () => {
   cart.value = {};
   total.value = 0 ;
   printCart();
-};
+}
+
+const submit = () => {
+  if(cart.value.isEmpty){
+    console.log("cart is empty : " + cart.value);
+    return;
+  }else{
+    console.log("cart is not empty : " );
+    printCart();
+    sendRequest();
+  }
+}
+
+const sendRequest = async () => {
+    const response = await axios.post('http://127.0.0.1:8000/api/resturant/order' 
+      ,{
+        resturantId  : props.resturantId , 
+        tableNumber : props.tableNumber ,
+        orderContents : cart.value , 
+      }
+      ,{ headers: {
+      'Content-Type': 'application/json'
+        }
+      }
+    ).then(function (response) {
+    console.log("response : " + response.data);
+    cart.value = {} ;
+    total.value = 0 ;
+    })
+    .catch(function (error) {
+    console.log("error : " + error);
+    });
+  
+}
 
 const isAdded = (id) => {
   if(cart.value[id]){
@@ -68,11 +106,9 @@ const isEmpty = () => {
     return false;
   }
 }
-
 </script>
 <template>
   <section class="food_section layout_padding">
-  
     <div class="container">
       <div class="heading_container heading_center">
         <h2>
@@ -81,14 +117,14 @@ const isEmpty = () => {
       </div>
 
       <ul class="filters_menu">
-        <li class="active" data-filter="*">All</li>
+        <li class="active" data-filter="*">All </li>
         <li v-for="cat in props.categories" :key="cat.index" :data-filter="`.${cat}`">{{ cat }}</li>
       </ul>
 
       <div class="filters-content">
         <div class="row grid">
           <!-- !-- loop food start -- -->
-          <div v-for="(fod , index) in food " :key="fod.id" :class="`col-sm-6 col-lg-4 all ${props.categories[fod.category_id]} `">
+          <div v-for="fod in food " :key="fod.id" :class="`col-sm-6 col-lg-4 all ${props.categories[fod.category_id]} `">
             <div class="box">
               <div>
                 <div class="img-box">
@@ -101,13 +137,19 @@ const isEmpty = () => {
                   <p>
                     {{ fod.description }}
                   </p>
-                  <div class="options">
+                  <p>
                     {{ fod.availability }}
-                  </div>
-                  <div >
+                  </p>
+                    
+                    <div class="options">
                     <h6>
                       {{ fod.price }} SR
                     </h6>
+
+                    <!-- icon start -->
+                    
+                    
+                 
                     <button type="button" @click="add_increase(fod.id)" >
                     add to cart
                     </button>
@@ -120,14 +162,13 @@ const isEmpty = () => {
                     <button type="button" @click="decreaseQuantity(fod.id)" >
                       decrease
                     </button>
-                    
                   </div>
+                  
                   
                 </div>
               </div>
             </div>
           </div>
-          <!-- !-- loop food essnd -- -->
         </div>
       </div>
     </div>
@@ -138,7 +179,6 @@ const isEmpty = () => {
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="exampleModalLabel">Cart Contents</h1>
-          <!-- <button type="b,utton" classs="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button> -->
         </div>
         <div class="modal-body">
           
@@ -153,6 +193,7 @@ const isEmpty = () => {
               </tr>
             </thead>
             <tbody>
+
               <tr v-for="(quantity, id) in cart" :key="id" >
                 <td>{{ id }}</td>
                 <td>{{ props.food[id]['name'] }}</td>
@@ -167,7 +208,7 @@ const isEmpty = () => {
         <div class="modal-footer">
           <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >Cansel</button>
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents">Delete Contents</button>
-          <button type="button" class="btn btn-primary">Submit</button>
+          <button type="button" class="btn btn-primary" @click="submit">Submit</button>
         </div>
       </div>
     </div>
