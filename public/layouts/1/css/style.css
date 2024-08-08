@@ -789,7 +789,7 @@ a:focus {
 .client_section .box .detail-box {
   background-color: #222831;
   color: #ffffff;
-  padding: 25px 25px 15px 25px;
+  padding: 25px 25px 25px 25px;
   border-radius: 5px;
 }
 
@@ -1014,7 +1014,7 @@ a:focus {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  left: 130px;
+  left: 120px;
   bottom: 10px;
 }
 button#plus , button#minus{
@@ -1039,5 +1039,18 @@ text-align: center;
   width: 50px;
   height: 50px;
   background-color: #ffbe33;
+}
+button.delete{
+  position: absolute;
+  color: white;
+  background-color: red;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  width: 25px;
+  height: 25px;
+  margin-left: 200px;
+  margin-bottom: -10px;
+
 }
 /* plus and minus buttons */
