@@ -18,6 +18,17 @@ Route::get('/', function () {
 })->middleware('auth');
 
 
+// Route::get('/test', function () {
+//     $order = Order::create([
+//         'resturant_id' => $this->resturant_id ,
+//         'table_number' => $this->table_number ,
+//     ]);
+//     return ;
+// });
+
+
+
+
 
 Route::get('/menu/{resturantName}/{tableNumber}', function ($resturantName , $tableNumber) {
     $resturant_info = Resturant::where('name' ,$resturantName)->first();

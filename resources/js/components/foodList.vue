@@ -13,19 +13,10 @@ const props = defineProps({
 
 const cart = ref({});
 const total = ref(0);
+const isempty = ref(true);
+
 
 const display_flex = (id) => {
-  // const divs = document.querySelectorAll('.atTheButtom');
-  // divs.forEach(div => 
-  //   {
-  //     if(div.getAttribute('data-food-id') === id.toString())
-  //     {
-  //       div.style.display = "flex";
-  //     }
-  //   }
-  // );
-
-  // new code
   add_increase(id);
   const div_by_id = document.getElementById(`${id}`);
   console.log("dd" + div_by_id.value);
@@ -37,9 +28,8 @@ const display_flex = (id) => {
 const printCart = () => {
   console.log("Cart Contsents:");
   for (const id in cart.value) {
-    if(cart.value.hasOwnProperty(id)) {
+    if (cart.value.hasOwnProperty(id)) {
       console.log(`ID: ${id}, Quantity: ${cart.value[id]}`);
-      // quantity.value = cart.value[id];
     }
   } 
   console.log('total : ' + total.value);
@@ -47,58 +37,17 @@ const printCart = () => {
 
 
 const add_increase = (id) => {
-  // const divs = document.querySelectorAll('.atTheButtom');
-  // divs.forEach(div => 
-  //   {
-  //     if(div.getAttribute('data-food-id') === id.toString())
-  //     {
-  //       if(cart.value[id])
-  //       {
-  //         quantity.value = cart.value[id]++;
-  //       }
-  //       else
-  //       {
-  //         quantity.value = cart.value[id] = 1;
-  //       }
-  //     }
-  //   }
-  // );
-
-
   if (cart.value[id]) {
     cart.value[id]++;
     } else {
     cart.value[id] = 1;
   }
   total.value  += props.food[id]['price'];
+  isEmpty();
   printCart();
 }
 
 const decreaseQuantity = (id) => {
-  // if(cart.value[id] > 0){
-  //   cart.value[id]--;
-  //   if(cart.value[id] < 1 ){
-  //     const divs = document.querySelectorAll('.atTheButtom');
-  //     divs.forEach(div => 
-  //       {
-  //         if(div.getAttribute('data-food-id') === id.toString())
-  //         {
-  //           div.style.display = "none";
-  //           total.value -= props.food[id]['price'] * cart.value[id];
-  //           delete cart.value[id];
-  //         }
-  //       }
-  //     );
-  //   }
-  // }
-  // else
-  // {
-  //   total.value -= props.food[id]['price'];
-  // }
-  // printCart();
-
-
-  //new code
   if(cart.value[id] > 1 ){
     cart.value[id]--;
   }else if(cart.value[id] == 1){
@@ -107,33 +56,18 @@ const decreaseQuantity = (id) => {
     div_by_id.style.display =  "none" ;
   }
   total.value -= props.food[id]['price'];
+  isEmpty();
   printCart();
 }
 
 const deleteAllquantity = (id) => {
-  // if(cart.value[id]){
-  //   total.value -= props.food[id]['price'] * cart.value[id] ;
-  //   cart.value[id] -= cart.value[id];
-
-  //   const divs = document.querySelectorAll('.atTheButtom');
-  //   divs.forEach(div => {
-  //     if(div.getAttribute('data-food-id') === id.toString())
-  //     {
-  //       div.style.display = "none";
-  //     }
-  //   });
-  // }
-  // total.value -= props.food[id]['price'] * cart.value[id];
-  // delete cart.value[id];
-  // printCart();
-
-  //new code 
   const div_by_id = document.getElementById(`${id}`);
   div_by_id.style.display =  "none" ;
   if(cart.value[id]){
     total.value -= props.food[id]['price'] * cart.value[id] ;
     delete cart.value[id];
   }
+  isEmpty();
   printCart();
 
 }
@@ -141,58 +75,61 @@ const deleteAllquantity = (id) => {
 const deleteCartContents = () => {
   cart.value = {};
   total.value = 0 ;
+  isEmpty();
   printCart();
-}
+};
 
-// --------------
 const submit = () => {
-  if(cart.value.isEmpty){
-    console.log("cart is empty : " + cart.value);
-    return;
-  }else{
-    console.log("cart is not empty : " );
-    printCart();
+  if (Object.keys(cart.value).length === 0) {
+    console.log("cannot send request with empty cart");
+  } else {
+    console.log("cart is not empty, will send request");
     sendRequest();
   }
-}
+};
 
 const sendRequest = async () => {
     const response = await axios.post('http://127.0.0.1:8000/api/resturant/order' 
       ,{
-        resturantId  : props.resturantId , 
-        tableNumber : props.tableNumber ,
-        orderContents : cart.value , 
+        resturant_id  : props.resturantId , 
+        table_number : props.tableNumber ,
+        order_contents : cart.value , 
       }
       ,{ headers: {
       'Content-Type': 'application/json'
         }
       }
     ).then(function (response) {
-    console.log("response : " + response.data);
-    cart.value = {} ;
-    total.value = 0 ;
+    console.log("response : " + response.data.message);
+    if(response.data.message == 'order sent successfuly'){
+      deleteCartContents();
+    }
+    printCart();
     })
     .catch(function (error) {
     console.log("error : " + error);
     });
-  
 }
+
 
 const isAdded = (id) => {
   if(cart.value[id]){
-    return true ;
+    return "none" ;
   }else{
-    return false;
+    return "flex";
   }
 }
 
 const isEmpty = () => {
-  if(cart.value.length == 0){ 
-    return true ;
+  if(Object.keys(cart.value).length === 0){ 
+    isempty.value = true ;
   }else{
-    return false;
+    isempty.value = false ;
   }
 }
+
+
+
 </script>
 <template>
   <section class="food_section layout_padding">
@@ -215,7 +152,7 @@ const isEmpty = () => {
             <div class="box">
               <div>
                 <div class="img-box">
-                  <img src="http://127.0.0.1:8000/layouts/1/images/f1.png" alt="">
+                  <img :src="fod.path" alt="">
                 </div>
                 <div class="detail-box">
                     <h5>
@@ -234,7 +171,7 @@ const isEmpty = () => {
                       </h6>
 
                       <!-- icon start -->
-                      <a class="cart_link "  @click="display_flex(fod.id)" style="margin-bottom: 40px;">
+                      <a class="cart_link "  @click="display_flex(fod.id)" :style="`margin-bottom: 40px;display: ${isAdded(fod.id)} ;`">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
                     <g>
                       <g>
@@ -348,9 +285,9 @@ const isEmpty = () => {
           <p>Total Invoice Value : {{ total }}</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >Cansel</button>
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents">Delete Contents</button>
-          <button type="button" class="btn btn-primary" @click="submit">Submit</button>
+          <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >Close</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents" :disabled="isempty">Delete Contents</button>
+          <button type="button" class="btn btn-primary" @click="submit"  :disabled="isempty">Send</button>
         </div>
       </div>
     </div>

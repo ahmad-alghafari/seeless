@@ -3,7 +3,6 @@ import {onMounted, ref } from "vue";
 import foodList from "./foodList.vue";
 import foter from "./foter.vue";
 import navBar from "./navBar.vue";
-import Foodlisttemp from "./foodlisttemp.vue";
 
 const resturant_info = ref({});
 const categories = ref({});
@@ -30,7 +29,6 @@ onMounted(() => {
 <template>
     <navBar :returantName="resturant_info.name" />
     <foodList  :food="food" :categories="categories"  :resturantId="resturant_info.id" :tableNumber="tableNumber" />
-    <!-- <Foodlisttemp  :food="food" :categories="categories"  :resturantId="resturant_info.id" :tableNumber="tableNumber" /> -->
     <foter/>
 </template>
 

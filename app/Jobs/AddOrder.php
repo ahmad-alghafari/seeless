@@ -14,23 +14,24 @@ class AddOrder implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
+        public $resturant_id ;
+        public $table_number ;
+        public $order_contents ;
+
     public function __construct(
-        public $resturant_id ,
-        public $table_number ,
-        public $order_contents ,
+        $res_id , 
+        $tab_num ,
+        $ord_cont ,
     )
     {
-        //
+        $this->resturant_id = $res_id;
+        $this->table_number =$tab_num;
+        $this->order_contents = $ord_cont;
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
+        
         $order = Order::create([
             'resturant_id' => $this->resturant_id ,
             'table_number' => $this->table_number ,
