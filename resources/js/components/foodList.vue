@@ -10,7 +10,6 @@ const props = defineProps({
   tableNumber : Number
 });
 
-
 const cart = ref({});
 const total = ref(0);
 const isempty = ref(true);
@@ -19,7 +18,6 @@ const isempty = ref(true);
 const display_flex = (id) => {
   add_increase(id);
   const div_by_id = document.getElementById(`${id}`);
-  console.log("dd" + div_by_id.value);
   div_by_id.style.display = "flex";
 }
 
@@ -104,9 +102,9 @@ const sendRequest = async () => {
     if(response.data.message == 'order sent successfuly'){
       deleteCartContents();
     }
-    printCart();
     })
     .catch(function (error) {
+    printCart();
     console.log("error : " + error);
     });
 }
@@ -125,6 +123,14 @@ const isEmpty = () => {
     isempty.value = true ;
   }else{
     isempty.value = false ;
+  }
+}
+
+const isExist = (id) => {
+  if(cart.value[id]){
+    return true;
+  }else{
+    return false;
   }
 }
 
@@ -161,15 +167,14 @@ const isEmpty = () => {
                     <p>
                       {{ fod.description }}
                     </p>
-                    <p>
+                    <div class="row"></div>
+                    <div class="col-6">
                       {{ fod.availability }}
-                    </p>
-                    
+                    </div>
+                    <div class="col-6">
+                      {{ fod.price }} SR
+                    </div>
                     <div class="options">
-                      <h6>
-                        {{ fod.price }} SR
-                      </h6>
-
                       <!-- icon start -->
                       <a class="cart_link "  @click="display_flex(fod.id)" :style="`margin-bottom: 40px;display: ${isAdded(fod.id)} ;`">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
@@ -228,17 +233,17 @@ const isEmpty = () => {
                       <!-- icon end -->
 
                       <!-- at the bottom start -->
-                      <div class="atTheButtom" :id="fod.id" v-if="cart[fod.id] != 0">
-                        <button type="button" id="minus" @click="decreaseQuantity(fod.id)">
+                      <div class="atTheButtom" :id="fod.id" >
+                        <button type="button" id="minus" @click="decreaseQuantity(fod.id)"  v-if="cart[fod.id]">
                           <i class="fa fa-minus"></i>
                         </button>
                         <div class="numOfCate" v-if="cart[fod.id]">
                           <h5>{{ cart[fod.id]  }}</h5>
                         </div>
-                        <button type="button" id="plus" @click="add_increase(fod.id)">
+                        <button type="button" id="plus" @click="add_increase(fod.id)" v-if="cart[fod.id]">
                           <i class="fa fa-plus"></i>
                         </button>
-                        <a class="delete" @click="deleteAllquantity(fod.id)" style="background-color: red; font-weight: bold; cursor: pointer;" >
+                        <a class="delete" @click="deleteAllquantity(fod.id)" style="background-color: red; font-weight: bold; cursor: pointer;" v-if="cart[fod.id]">
                           X
                         </a>
                       </div> 
@@ -287,7 +292,7 @@ const isEmpty = () => {
         <div class="modal-footer">
           <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >Close</button>
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents" :disabled="isempty">Delete Contents</button>
-          <button type="button" class="btn btn-primary" @click="submit"  :disabled="isempty">Send</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="submit"  :disabled="isempty">Send</button>
         </div>
       </div>
     </div>
