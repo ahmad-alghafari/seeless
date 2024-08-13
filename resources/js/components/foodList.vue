@@ -28,6 +28,7 @@ const printCart = () => {
   for (const id in cart.value) {
     if (cart.value.hasOwnProperty(id)) {
       console.log(`ID: ${id}, Quantity: ${cart.value[id]}`);
+      
     }
   } 
   console.log('total : ' + total.value);
@@ -142,20 +143,19 @@ const isExist = (id) => {
     <div class="container">
       <div class="heading_container heading_center">
         <h2>
-          Our Menu 
+          قائمة الطعام
         </h2>
       </div>
 
-      <ul class="filters_menu">
-        <li class="active" data-filter="*">All </li>
+      <ul class="filters_menu" >
+        <li class="active" data-filter="*">الكل  </li>
         <li v-for="cat in props.categories" :key="cat.index" :data-filter="`.${cat}`">{{ cat }}</li>
       </ul>
-
       <div class="filters-content">
-        <div class="row grid">
+        <div class="row grid"  >
           <!-- !-- loop food start -- -->
-          <div v-for="fod in food " :key="fod.id" :class="`col-sm-6 col-lg-4 all ${props.categories[fod.category_id]} `">
-            <div class="box">
+          <div v-for="fod in food " :key="fod.id" :class="`col-sm-6 col-lg-4 all ${props.categories[fod.category_id]} `" >
+            <div class="box" >
               <div>
                 <div class="img-box">
                   <img :src="fod.path" alt="">
@@ -176,7 +176,7 @@ const isExist = (id) => {
                     </div>
                     <div class="options">
                       <!-- icon start -->
-                      <a class="cart_link "  @click="display_flex(fod.id)" :style="`margin-bottom: 40px;display: ${isAdded(fod.id)} ;`">
+                      <a class="cart_link "  @click="display_flex(fod.id)" :style="`display: ${isAdded(fod.id)} ;`">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
                     <g>
                       <g>
@@ -237,13 +237,25 @@ const isExist = (id) => {
                         <button type="button" id="minus" @click="decreaseQuantity(fod.id)"  v-if="cart[fod.id]">
                           <i class="fa fa-minus"></i>
                         </button>
+                      <div class="atTheButtom" :id="fod.id" v-if="cart[fod.id] != 0" >
+                        <button type="button" id="plus" @click="add_increase(fod.id)">
+                          <i class="fa fa-plus"></i>
+
+                        </button>
                         <div class="numOfCate" v-if="cart[fod.id]">
                           <h5>{{ cart[fod.id]  }}</h5>
                         </div>
+
                         <button type="button" id="plus" @click="add_increase(fod.id)" v-if="cart[fod.id]">
                           <i class="fa fa-plus"></i>
                         </button>
                         <a class="delete" @click="deleteAllquantity(fod.id)" style="background-color: red; font-weight: bold; cursor: pointer;" v-if="cart[fod.id]">
+                        </a>
+                        <button type="button" id="minus" @click="decreaseQuantity(fod.id)">
+                          <i class="fa fa-minus"></i>
+                        </button>
+                        <a class="delete" @click="deleteAllquantity(fod.id)" >
+
                           X
                         </a>
                       </div> 
@@ -257,29 +269,27 @@ const isExist = (id) => {
       </div>
     </div>
   </section>  
-  <button  type="button" class="floating-button btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">Cart</button>
+  <!-- fixed cart button start -->
+  <button  type="button" class="floating-button btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">شراء</button>
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Cart Contents</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel">محتويات الطلب</h1>
         </div>
         <div class="modal-body">
-          
           <table  class="table table-striped">
             <thead>
               <tr>
-                <th>test</th>
-                <th>Food Name</th>
-                <th>Number</th>
-                <th>Price</th>
-                <th>Total</th>
+                <th>الطلب</th>
+                <th>الرقم</th>
+                <th>السعر</th>
+                <th>المجموع</th>
               </tr>
             </thead>
             <tbody>
 
               <tr v-for="(quantity, id) in cart" :key="id" >
-                <td>{{ id }}</td>
                 <td>{{ props.food[id]['name'] }}</td>
                 <td>{{ quantity }}</td>
                 <td>{{ props.food[id]['price'] }}</td>
@@ -287,12 +297,19 @@ const isExist = (id) => {
                </tr> 
             </tbody>
           </table>
-          <p>Total Invoice Value : {{ total }}</p>
+          <p>قيمة الفاتورة : {{ total }} </p>
         </div>
         <div class="modal-footer">
+<<<<<<< HEAD
           <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >Close</button>
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents" :disabled="isempty">Delete Contents</button>
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="submit"  :disabled="isempty">Send</button>
+=======
+          <button type="button" class="btn btn-primary" @click="submit"  :disabled="isempty">إرسال الطلب</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents" :disabled="isempty">حذف المحتويات</button>
+          <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >إغلاق</button>
+
+>>>>>>> a09c35b12550da21f218bac888b24026bdb7b321
         </div>
       </div>
     </div>
@@ -305,7 +322,7 @@ const isExist = (id) => {
 .floating-button {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  left: 20px;
   width: 60px;
   height: 60px;
   background-color: #f39c12;

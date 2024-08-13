@@ -33,10 +33,10 @@ defineProps({
             <ul class="navbar-nav  mx-auto ">
               
               <li class="nav-item active">
-                <a class="nav-link" href="menu.html">Menu <span class="sr-only">(current)</span> </a>
+                <a class="nav-link" href="menu.html">قائمة الأطعمة <span class="sr-only">(current)</span> </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="about.html">About</a>
+                <a class="nav-link" href="about.html">حول</a>
               </li>
               
             </ul>
