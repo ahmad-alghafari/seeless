@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html dir="rtl">
 
 <head>
   <!-- Basic -->
@@ -61,6 +61,9 @@
 
   <!-- custom js -->
   <script src="http://127.0.0.1:8000/layouts/1/js/custom.js"></script>
+
+  <!-- amiri font -->
+   <!-- <script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript">></script> -->
 
   @vite('resources/js/app.js')
 </body>
