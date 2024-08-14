@@ -39,7 +39,6 @@
 *::before,
 *::after {
   box-sizing: border-box;
- 
 }
 
 html {
@@ -5749,7 +5748,7 @@ a.close.disabled {
 .modal-dialog {
   position: relative;
   width: auto;
-  margin: 0.5rem;
+  margin: 10rem 0.5rem;
   pointer-events: none;
 }
 
