@@ -5,35 +5,18 @@ use App\Models\Category;
 use App\Models\Food;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
+Auth::routes();
 
-Route::get('/welcome', function () {
-    return view('welcome');
-})->middleware('auth');
-
-
-
-Route::get('/', function () {
-    return view('welcome');
-})->middleware('auth');
-
-
-// Route::get('/test', function () {
-//     $order = Order::create([
-//         'resturant_id' => $this->resturant_id ,
-//         'table_number' => $this->table_number ,
-//     ]);
-//     return ;
-// });
-
-
-
-
+Route::get('/dashboard/{vue_capture?}', function() {
+    $id = Auth::user()->resturant->id;
+    return view('dashboard.index',compact('id'));
+})->where('vue_capture', '[\/\w\.-]*')->middleware('auth');
 
 Route::get('/menu/{resturantName}/{tableNumber}', function ($resturantName , $tableNumber) {
     $resturant_info = Resturant::where('name' ,$resturantName)->first();
-    // $categories_api = env('APP_URL') . ':'.'8000' . '/api/resturant/'. $resturant_info->id . '/categories';
-    if($resturant_info->status == "run"){
+    if($resturant_info && $resturant_info->status == "run" ){
 
         $food_response = $resturant_info->Food;
         $food = [] ;
@@ -52,5 +35,3 @@ Route::get('/menu/{resturantName}/{tableNumber}', function ($resturantName , $ta
         return "404 , the web is off";
     }
 });
-
-Auth::routes();
