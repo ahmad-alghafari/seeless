@@ -152,7 +152,7 @@ const isEmpty = () => {
             <div class="box zoomIn">
               <div>
                 <div class="img-box">
-                  <img src="/public/layouts/1/images/f1.png" alt="">
+                  <img :src="`/${food.path}`" alt="">
                 </div>
                 <div class="detail-box">
                     <h5>
