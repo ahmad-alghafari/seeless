@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 Auth::routes();
 
-Route::get('/{vue_capture?}', function() {
+Route::get('/dashboard/{vue_capture?}', function() {
     $id = Auth::user()->resturant->id;
     return view('dashboard.index',compact('id'));
 })->where('vue_capture', '[\/\w\.-]*')->middleware('auth');

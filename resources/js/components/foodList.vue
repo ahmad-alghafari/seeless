@@ -268,6 +268,7 @@ const isExist = (id) => {
         </div>
       </div>
     </div>
+    </div>
   </section>  
   <!-- fixed cart button start -->
   <button  type="button" class="floating-button btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">شراء</button>
@@ -300,16 +301,13 @@ const isExist = (id) => {
           <p>قيمة الفاتورة : {{ total }} </p>
         </div>
         <div class="modal-footer">
-<<<<<<< HEAD
           <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >Close</button>
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents" :disabled="isempty">Delete Contents</button>
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="submit"  :disabled="isempty">Send</button>
-=======
           <button type="button" class="btn btn-primary" @click="submit"  :disabled="isempty">إرسال الطلب</button>
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents" :disabled="isempty">حذف المحتويات</button>
           <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >إغلاق</button>
 
->>>>>>> a09c35b12550da21f218bac888b24026bdb7b321
         </div>
       </div>
     </div>

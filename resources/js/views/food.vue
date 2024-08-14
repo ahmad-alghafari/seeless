@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref ,defineProps } from 'vue';
+import { onMounted, ref  , computed } from 'vue';
 import axios, { Axios } from 'axios';
 import { useRoute } from "vue-router";
 const route = useRoute();
@@ -14,23 +14,40 @@ const categoryFucas = ref({});
 const file = ref(null)
 const id = ref(null);
 
+const foodCount = computed(() => Object.keys(foods.value).length);
+
+const categoriesCount = computed(() => Object.keys(categories.value).length);
+
+
+
+const availablefoodCount = computed(() => {
+    return Object.values(foods.value).filter(food => food.availability === "availble").length;
+});
+
+
+
 onMounted( async ()  => {
     id.value = route.params.id;
-    console.log("id : " + id.value);
      fetching();
 });
 
+const dd = (str = "" , variable) =>{
+  console.log(str +" : " + variable);
+} 
+const print = ( variable) =>{
+  console.log(variable);
+} 
 const getFood = (id) => {
     foodFucas.value = foods.value[id] ;
 }
 
 const getCategory = (id) => {
     categoryFucas.value.id = id ;
-    console.log("id test : " +categoryFucas.value.id);
-
     categoryFucas.value.name = categories.value[id];
-    console.log("name test : " +categoryFucas.value.name);
+}
 
+const freeCategoryFuces = () => {
+    categoryFucas.value = {};
 }
 
 const freeFoodFuces = () => {
@@ -161,6 +178,7 @@ const postChangStatus = async (id) => {
     }).then(function(response){
         if(response.data.status == "200" ){
             foods.value[id].availability = temp ;
+            foods.value[id].updated_at  = response.data.updated_at ;
             console.log(temp);
         }else{
           console.log(response.data.message);
@@ -193,115 +211,70 @@ const deleteFood = async (id) =>{
 }
 
 const submitchangecategory = async () =>{
-  console.log("change name of category start");
+  print("change name of category start");
   axios.post("http://127.0.0.1:8000/api/category/edit/"+categoryFucas.value.id  , {
     name : categoryFucas.value.name ,
   }).then(
     function(response){
       if(response.data.status == "200"){
         categories.value[categoryFucas.value.id] = categoryFucas.value.name ;
-        console.log(categories.value[categoryFucas.value.id]);
-        
       }else{
-        console.log(response.data.message);
+        dd("message : " , response.data.message)
       }
+      freeCategoryFuces();
     }
-).catch(
+  ).catch(
         function (error) {
-            console.log("catch error : " + error);
-            console.log("change status end");
+            dd("catch error" , error);
         }
   );
-  console.log("change name of category end");
+  print("change name of category end");
+}
 
-  categoryFucas.value = {};
+const deletecategory = async () =>{
+  print("delete category start");
+  axios.delete("http://127.0.0.1:8000/api/category/delete/"+categoryFucas.value.id
+  ).then(function(response){
+    if(response.data.status == '200'){
+      delete categories.value[categoryFucas.value.id];
+    }else{
+      dd("message : " , response.data.message);
+    }
+    freeCategoryFuces();
+
+  }).catch(
+    function (error) {
+      dd("catch error" , error);
+    }
+  );
+  print("delete category end");
+}
+
+const addcategory = async () => {
+  print("add category start");
+  axios.post("http://127.0.0.1:8000/api/category/create/"+id.value  , {
+    name : categoryFucas.value.name ,
+  }).then(
+    function(response){
+      if(response.data.status == "200"){
+        categories.value[response.data.id] = categoryFucas.value.name ;
+      }else{
+        dd("message : " , response.data.message)
+      }
+      freeCategoryFuces();
+    }
+  ).catch(
+        function (error) {
+            dd("catch error" , error);
+        }
+  );
+  print("add category end");
 }
 </script>
 
 <template>
     <div class="container-fluid py-4">
       <div class="row">
-        <div class="col-12">
-          <div class="card my-4">
-            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                <h6 class="text-white text-capitalize ps-3">الأطعمة  </h6>
-              </div>
-            </div>
-            <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">الأسم</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">الصنف</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">التوفر</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">السعر</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">التخفيض</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">زمن آخر تعديل</th>
-                      <!-- <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"></th> -->
-                      <th class="text-secondary opacity-7"></th>
-                      <th class="text-secondary opacity-7"></th>
-                    </tr>
-                  </thead>
-                  <tbody v-show="isLoading == false" >
-                    <tr v-for="food in foods" :key="food.id">
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img :src="`http://127.0.0.1:8000/${food.path}`" class="avatar avatar-sm me-3 border-radius-lg" alt="user1">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{ food.name}}</h6>
-                            <!-- <p class="text-xs text-secondary mb-0">john@creative-tim.com</p> -->
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ categories[food.category_id]}}</p>
-                        <!-- <p class="text-xs text-secondary mb-0">Organization</p> -->
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                            <span class="badge badge-sm bg-gradient-success" v-if="food.availability == 'availble'" @click="postChangStatus(food.id)">متوفر</span>
-                            <span class="badge badge-sm bg-gradient-secondary" v-else @click="postChangStatus(food.id)">غير متوفر</span>
-                        <!-- </button> -->
-
-                        
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">{{ food.price }}</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold" v-if="food.discount == null">لا</span>
-                        <span class="text-secondary text-xs font-weight-bold" v-else>{{ food.discount }}</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">{{ food.updated_at.split('T')[0] }}</span>
-                      </td>
-                      <td class="align-middle">
-                        <!-- <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          تعديل
-                        </a> -->
-                        <button type="button" @click="getFood(food.id)" class="btn btn-secondary font-weight-bold" data-bs-toggle="modal" data-bs-target="#editfood" >
-                            تعديل
-                        </button>
-                        
-                      </td>
-                      <td class="align-middle">
-                        <button type="button" @click="deleteFood(food.id)" class="btn btn-danger font-weight-bold" >
-                            حذف
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                  <!-- <tbody >
-                    loading
-                  </tbody> -->
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
         <div class="col-lg-3 col-sm-6">
           <div class="card">
             <div class="card-header p-3 pt-2">
@@ -323,8 +296,157 @@ const submitchangecategory = async () =>{
             </div>
           </div>
         </div>
+        <div class="col-lg-3 col-sm-6 mb-lg-0 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">leaderboard</i>
+              </div>
+              <div class="text-start pt-1">
+                <p class="text-sm mb-0 text-capitalize">عدد الأطعمة</p>
+                <h4 class="mb-0">{{ foodCount }}</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6 mb-lg-0 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">leaderboard</i>
+              </div>
+              <div class="text-start pt-1">
+                <p class="text-sm mb-0 text-capitalize">عدد الأطعمة المتاحة</p>
+                <h4 class="mb-0">{{ availablefoodCount }}</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+            </div>
+          </div>
+        </div>
       </div>
       <br>
+      <div class="row">
+        <div class="col-12">
+          <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                <h6 class="text-white text-capitalize ps-3">الأطعمة  </h6>
+              </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+              <div class="table-responsive p-0">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">الأسم</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">الصنف</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">التوفر</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">السعر</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">التخفيض</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">زمن آخر تعديل</th>
+                      <th class="text-secondary opacity-7"></th>
+                      <th class="text-secondary opacity-7"></th>
+                    </tr>
+                  </thead>
+                  <tbody v-show="isLoading == false" >
+                    <tr v-for="food in foods" :key="food.id">
+                      <td>
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <img :src="`http://127.0.0.1:8000/${food.path}`" class="avatar avatar-sm me-3 border-radius-lg" alt="user1">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-sm">{{ food.name}}</h6>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ categories[food.category_id]}}</p>
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                            <span class="badge badge-sm bg-gradient-success" v-if="food.availability == 'availble'" @click="postChangStatus(food.id)">متوفر</span>
+                            <span class="badge badge-sm bg-gradient-secondary" v-else @click="postChangStatus(food.id)">غير متوفر</span>
+
+                        
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="text-secondary text-xs font-weight-bold">{{ food.price }}</span>
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="text-secondary text-xs font-weight-bold" v-if="food.discount == null">لا</span>
+                        <span class="text-secondary text-xs font-weight-bold" v-else>{{ food.discount }}</span>
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="text-secondary text-xs font-weight-bold">{{ food.updated_at.split('T')[0] }}</span>
+                      </td>
+                      <td class="align-middle">
+                        <button type="button" @click="getFood(food.id)" class="btn btn-secondary font-weight-bold" data-bs-toggle="modal" data-bs-target="#editfood" >
+                            تعديل
+                        </button>
+                      </td>
+                      <td class="align-middle">
+                        <button type="button" @click="deleteFood(food.id)" class="btn btn-danger font-weight-bold" >
+                            حذف
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                  <!-- <tbody >
+                    loading
+                  </tbody> -->
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-3 col-sm-6">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+                <button type="button" data-bs-toggle="modal" data-bs-target="#addcategory" class="custom-button" @click="freeCategoryFuces">
+                    <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                        <i class="material-icons opacity-10">add</i>
+                    </div>
+                </button>
+              <div class="text-start pt-1">
+                <p class="text-sm mb-0 text-capitalize">إضافة</p>
+                <h4 class="mb-0">صنف</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+              <p class="mb-0 text-start">
+                   الصنف يظهر للمستخدم على أنه نوع المأكولات او المشروبات وكل طعام ينتمي إلى صنف 
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6 mb-lg-0 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">leaderboard</i>
+              </div>
+              <div class="text-start pt-1">
+                <p class="text-sm mb-0 text-capitalize">عدد الأصناف</p>
+                <h4 class="mb-0">{{ categoriesCount }}</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+      
       <div class="row">
         <div class="col-12">
           <div class="card my-4">
@@ -358,7 +480,7 @@ const submitchangecategory = async () =>{
                         
                       </td>
                       <td class="align-middle">
-                        <button type="button"  class="btn btn-danger font-weight-bold" >
+                        <button type="button" @click="getCategory(id)" class="btn btn-danger font-weight-bold" data-bs-toggle="modal" data-bs-target="#deletecategory">
                             حذف
                         </button>
                       </td>
@@ -438,7 +560,7 @@ const submitchangecategory = async () =>{
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="editcategoryLabel">تعديل على المعلومات المحفوظة</h1>
+        <h1 class="modal-title fs-5" id="editcategoryLabel">تعديل اسم الصنف</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -453,4 +575,44 @@ const submitchangecategory = async () =>{
     </div>
   </div>
 </div>
+
+<div class="modal fade dark" id="deletecategory" tabindex="-1" aria-labelledby="deletecategoryLabel" aria-hidden="true" data-bs-theme="dark">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="deletecategoryLabel">تحذير</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>في حال حذفت صنف طعام ما , فقد يتم جميع الأطعمة التي تندرج تحت هذا الصنف</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+        <button type="button" class="btn btn-danger"  data-bs-dismiss="modal" @click="deletecategory">تأكيد</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade dark" id="addcategory" tabindex="-1" aria-labelledby="addcategoryLabel" aria-hidden="true" data-bs-theme="dark">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addcategoryLabel">إضافة صنف جديد   </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="from-control">
+            <input type="text"  v-model="categoryFucas.name" class="form-control" placeholder="الأسم">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+        <button type="button" class="btn btn-primary"  data-bs-dismiss="modal" @click="addcategory">حفظ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 </template>

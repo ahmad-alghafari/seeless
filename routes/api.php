@@ -15,6 +15,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// ---------- category --------------
+
 Route::post("/category/edit/{id}",function(Request $request , $id){
     try{
         $request->validate([
@@ -53,6 +55,72 @@ Route::post("/category/edit/{id}",function(Request $request , $id){
 
 });
 
+Route::delete("category/delete/{id}" , function($id){
+    try{
+        $deleted = Category::destroy($id);
+        if($deleted){
+            return response()->json([
+                'status' => "200" ,
+            ]);
+        }
+        return response()->json([
+            'status' => "500" ,
+            'message' => 'db : can not delete category',
+        ]);
+    }catch (ValidationException $e) {
+        return response()->json(['message' => $e->errors(), 'status' => "422"]);
+    } catch (\Exception $e) {
+        // Log the exception for debugging
+        return response()->json([
+            'status' => '500',
+            'message' => 'Server error: ' . $e->getMessage(),
+        ]);
+    }
+});
+
+Route::post("/category/create/{id}", function(Request $request , $id) {
+    try {
+        $request->validate([
+            'name' => 'required',
+        ]);
+
+        
+        $resturant = Resturant::where('id' , $id)->first();
+        if($resturant){
+            $category = $resturant->Category()->create([
+                'name' => $request->name,
+            ]);
+            
+            if($category) {
+                return response()->json([
+                    'status' => '200',
+                    'id' => $category->id
+                ]);
+            } else {
+                return response()->json([
+                    'status' => '500',
+                    'message' => "Database error: Could not add the food item.",
+                ]);
+            }
+        }else{
+            return response()->json([
+                'status' => '500',
+                'message' => "Database error: no resturant has this id.",
+            ]);
+        }
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json(['server_errors' => $e->errors(), 'status' => "422"]);
+    } catch (\Exception $e) {
+        // Log the exception for debugging
+        return response()->json([
+            'status' => '500',
+            'message' => 'Server error: ' . $e->getMessage(),
+        ]);
+    }
+});
+
+
+// ---------- food --------------
 Route::delete("/food/delete/{id}" , function($id){
     try{
         $food = Food::where('id' , $id)->first();
@@ -207,14 +275,16 @@ Route::post("/food/change", function(Request $request) {
         ]);
     }
 });
+
 Route::post("/food/status",function(Request $request){
-    $food = Food::find($request->id);
     try{
+        $food = Food::find($request->id);
         $food->update([
             'availability' => $request->status
         ]);
         return response()->json([
             "status" => "200" ,
+            'updated_at' => $food->updated_at
         ]);
     }catch(ValidationException $e){
         return response()->json(['server : errors ->' => $e->errors() , 'status' => 422], 422);

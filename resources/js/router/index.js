@@ -6,12 +6,12 @@ import food from "../views/food.vue" ;
 
 const routes = [
     {
-        path:'/',
+        path:'/dashboard',
         name:'dashboard',
         component: dashBoard
     },
     {
-        path:'/food/:id',
+        path:'/dashboard/food/:id',
         name:'food',
         component: food,
     }

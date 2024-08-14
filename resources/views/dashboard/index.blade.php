@@ -25,7 +25,8 @@
   @vite('resources/css/app.css' , 'resources/js/dash.js')
 </head>
 
-<body class="g-sidenav-show rtl bg-gray-200">
+<body class="g-sidenav-show rtl bg-gray-200 ">
+  {{-- dark-version --}}
 
 
 <script>
