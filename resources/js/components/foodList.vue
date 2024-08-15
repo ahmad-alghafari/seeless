@@ -19,7 +19,6 @@ const isempty = ref(true);
 const display_flex = (id) => {
   add_increase(id);
   const div_by_id = document.getElementById(`${id}`);
-  console.log("dd" + div_by_id.value);
   div_by_id.style.display = "flex";
 }
 
@@ -101,10 +100,9 @@ const sendRequest = async () => {
         }
       }
     ).then(function (response) {
-    console.log("response : " + response.data.message);
-    if(response.data.message == 'order sent successfuly'){
-      deleteCartContents();
-    }
+      if(response.data.status == '200'){
+        deleteCartContents();
+      }
     printCart();
     })
     .catch(function (error) {
@@ -118,6 +116,14 @@ const isAdded = (id) => {
     return "none" ;
   }else{
     return "flex";
+  }
+}
+
+const isadded = (id) => {
+  if(cart.value[id]){
+    return "flex" ;
+  }else{
+    return "none";
   }
 }
 
@@ -152,7 +158,7 @@ const isEmpty = () => {
             <div class="box zoomIn">
               <div>
                 <div class="img-box">
-                  <img :src="`/${food.path}`" alt="">
+                  <img :src="`/${fod.path}`" alt="">
                 </div>
                 <div class="detail-box">
                     <h5>
@@ -228,7 +234,7 @@ const isEmpty = () => {
                       <!-- icon end -->
 
                       <!-- at the bottom start -->
-                      <div class="atTheButtom" :id="fod.id" v-if="cart[fod.id] != 0" >
+                      <div class="atTheButtom" :id="fod.id"  :style="`display : ${isadded(fod.id)}`">
                         <button type="button" id="plus" @click="add_increase(fod.id)">
                           <i class="fa fa-plus"></i>
                         </button>

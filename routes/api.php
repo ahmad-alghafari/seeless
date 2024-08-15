@@ -3,17 +3,120 @@
 use App\Jobs\AddOrder;
 use App\Jobs\AddOrderMonthly;
 use App\Models\Category;
+use App\Models\MonthlyOrder;
+use App\Models\Order;
 use App\Models\Food;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\Resturant;
-use Illuminate\Auth\Events\Validated;
 use Illuminate\Validation\ValidationException;
 
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+
+Route::get("/orders/{id}" , function($id){
+    try{
+        $resturant = Resturant::find($id);
+        if($resturant){
+            if($resturant->service_type == "per_order"){
+                $temp_orders = 
+                $resturant
+                ->MonthlyOrder()
+                ->select('id', 'table_number', 'created_at')
+                ->with(['Content' => function ($query) {
+                    $query->select('id', 'food_id', 'count' , 'order_id'); 
+                }])
+                ->where('implemented', 'false')
+                ->get();
+    
+                $orders = [];
+                foreach($temp_orders as $order){
+                    $orders[$order->id] = $order;
+                }   
+            }else{
+                $temp_orders = $resturant->Orders()->with('Content')->get();
+                $orders = [];
+                foreach($temp_orders as $order){
+                    $orders[$order->id] = $order;
+                } 
+            }
+            if($orders){
+                $food = [] ;
+                $temp_food = $resturant->Food()->select('id', 'name', 'price', 'discount')->get();
+                foreach($temp_food as $fo){
+                    $food += [$fo->id => $fo];
+                }
+                return response()->json([
+                    'status' => '200' ,
+                    'orders' => $orders ,
+                    'food' => $food
+                ]);
+            }else{
+                return response()->json([
+                    'status' => '404' ,
+                    'message' => 'no orders found' 
+
+                ]);
+            }
+        }
+        return response()->json([
+            'status' => '404' ,
+            'message' => 'no resturant found' 
+        ]);
+
+    }catch (ValidationException $e) {
+        return response()->json(['server_errors' => $e->errors(), 'status' => "422"]);
+    } catch (\Exception $e) {
+        // Log the exception for debugging
+        return response()->json([
+            'status' => '500',
+            'message' => 'Server error: ' . $e->getMessage(),
+        ]);
+    }
+});
+
+Route::post("/orders/implement",function(Request $request){
+    try{
+        $resturant = Resturant::find($request->id);
+
+        if (!$resturant) {
+            return response()->json([
+                'status' => '404',
+                'message' => 'Restaurant not found',
+            ]);
+        }
+
+        $query = $resturant
+        ->MonthlyOrder()
+        ->where('id', $request->order_id)
+        ->update(['implemented' => 'true']);
+
+        if ($query) {
+            return response()->json([
+                'status' => '200',
+            ]);
+        } else {
+            return response()->json([
+                'status' => '500',
+                'message' => 'Unable to update the order implementation status',
+            ], 500);
+        }
+    }catch (ValidationException $e) {
+        return response()->json(['server_errors' => $e->errors(), 'status' => "422"]);
+    } catch (\Exception $e) {
+        // Log the exception for debugging
+        return response()->json([
+            'status' => '500',
+            'message' => 'Server error: ' . $e->getMessage(),
+        ]);
+    }
+});
+
+Route::delete("/orders/delete/{id}" , function(Request $request , $id){
+});
 
 // ---------- category --------------
 
@@ -157,7 +260,7 @@ Route::post("/food/add/{id}", function(Request $request , $id) {
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $fileName = time() . '.' . '' . '.' . $file->extension();
+            $fileName = time() . '.' . $id . '.' . $file->extension();
             $filePath = "images/food/" . $fileName;
             $file->move(public_path('images/food'), $fileName);
         }else{
@@ -323,9 +426,10 @@ Route::get("/foodAndCategories/{id}",function($id){
     }
 });
 
+
 Route::post('/resturant/order', function(Request $request) {
     try {
-        $validated = $request->validate([
+        $request->validate([
             'resturant_id' => 'required|integer|exists:resturants,id',
             'table_number' => 'required|integer|min:1',
             'order_contents' => 'required', 
@@ -342,14 +446,14 @@ Route::post('/resturant/order', function(Request $request) {
         return response()->json(['server : errors ->' => $e->errors()], 422);
     }
 
-    $resturant_service_type = Resturant::where('id', $request->resturant_id)->get(['service_type']);
-    if (in_array($resturant_service_type , ['monthly', 'just_menu_monthly'])) {
+    $resturant = Resturant::where('id', $request->resturant_id)->first();
+    if ($resturant->service_type == 'per_order') {
         AddOrderMonthly::dispatch($request->resturant_id,$request->table_number, $request->order_contents);
     } else {
         AddOrder::dispatch($request->resturant_id, $request->table_number, $request->order_contents);
     }
 
     return response()->json([
-        'message' => 'order sent successfuly' ,
+        'status' => '200',
     ]);
 });

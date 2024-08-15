@@ -28,9 +28,12 @@
 <body class="g-sidenav-show rtl bg-gray-200 ">
   {{-- dark-version --}}
 
-
 <script>
   window.resturant_id = {{$id}} ;
+  window.service_type = @json($service_type) ;
+  window.order = @json($order) ;
+
+
 </script>
 
 <div id="dashboard">

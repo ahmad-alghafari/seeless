@@ -18,6 +18,11 @@ class Resturant extends Model
         return $this->HasMany(Order::class);
     }
 
+    public function MonthlyOrder() : HasMany{
+        return $this->HasMany(MonthlyOrder::class);
+    }
+    
+
     public function Category() : HasMany{
         return $this->HasMany(Category::class);
     }

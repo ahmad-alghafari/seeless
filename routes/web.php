@@ -10,8 +10,15 @@ use Illuminate\Support\Facades\Auth;
 Auth::routes();
 
 Route::get('/dashboard/{vue_capture?}', function() {
-    $id = Auth::user()->resturant->id;
-    return view('dashboard.index',compact('id'));
+    $resturant = Auth::user()->resturant;
+    $id = $resturant->id;
+    $service_type = $resturant->service_type ; 
+    if(in_array($service_type , ['per_order' , 'monthly' , 'one_year'])){
+        $order = 'true' ;
+    }else{
+        $order = 'false';
+    }
+    return view('dashboard.index',compact('id' ,'service_type' , 'order'));
 })->where('vue_capture', '[\/\w\.-]*')->middleware('auth');
 
 Route::get('/menu/{resturantName}/{tableNumber}', function ($resturantName , $tableNumber) {

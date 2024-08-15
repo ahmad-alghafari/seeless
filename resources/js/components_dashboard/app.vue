@@ -4,15 +4,24 @@ import foter from "./footer.vue";
 import navbar from "../components_dashboard/navbar.vue";
 import {ref , onMounted} from "vue" ; 
 const resturant_id = ref();
+const service_type = ref();
+const order = ref();
 
 onMounted(()=>{
   if(window.resturant_id){
     resturant_id.value = window.resturant_id;
+  }service_type
+  if(window.service_type){
+    service_type.value = window.service_type;
+  }
+  if(window.order){
+    order.value = window.order;
   }
 });
 </script>
 
 <template>
+  
     <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-end me-3 rotate-caret  bg-gradient-dark" id="sidenav-main">
       <div class="sidenav-header">
         <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute start-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
@@ -28,7 +37,7 @@ onMounted(()=>{
           <li class="nav-item">
             <router-link
             
-            to="/" class="nav-link">
+            to="/dashboard" class="nav-link">
               <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
                 <i class="material-icons-round opacity-10">dashboard</i>
               </div>
@@ -43,6 +52,16 @@ onMounted(()=>{
                   <i class="material-icons-round opacity-10">table_view</i>
                   </div>
                   <span class="nav-link-text me-1">الأطعمة و الأصناف</span>
+               </router-link>
+          </li>
+          <li class="nav-item" v-if="order == 'true'">
+                <router-link 
+                
+                :to="{name : 'orders' , params : {id : resturant_id}}" class="nav-link">
+                  <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
+                  <i class="material-icons-round opacity-10">table_view</i>
+                  </div>
+                  <span class="nav-link-text me-1">طلبات قيد الإنتظار</span>
                </router-link>
           </li>
 

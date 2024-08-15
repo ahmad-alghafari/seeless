@@ -2,6 +2,8 @@ import {createRouter , createWebHistory} from "vue-router" ;
 
 import dashBoard from "../views/main.vue" ;
 import food from "../views/food.vue" ;
+import orders from "../views/orders.vue" ;
+
 
 
 const routes = [
@@ -14,6 +16,11 @@ const routes = [
         path:'/dashboard/food/:id',
         name:'food',
         component: food,
+    },
+    {
+        path:'/dashboard/orders/:id',
+        name:'orders',
+        component: orders,
     }
 ]
 
