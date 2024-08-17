@@ -6,7 +6,8 @@ import {ref , onMounted} from "vue" ;
 const resturant_id = ref();
 const service_type = ref();
 const order = ref();
-
+const name = ref();
+const saved_orders = ref();
 onMounted(()=>{
   if(window.resturant_id){
     resturant_id.value = window.resturant_id;
@@ -17,6 +18,12 @@ onMounted(()=>{
   if(window.order){
     order.value = window.order;
   }
+  if(window.name){
+    name.value = window.name;
+  }
+  if(window.saved_orders){
+    saved_orders.value = window.saved_orders;
+  }
 });
 </script>
 
@@ -25,9 +32,9 @@ onMounted(()=>{
     <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-end me-3 rotate-caret  bg-gradient-dark" id="sidenav-main">
       <div class="sidenav-header">
         <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute start-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-        <a class="navbar-brand m-0" href="#" target="_blank">
+        <a class="navbar-brand m-0 text-center " href="#" target="_blank" >
           <!-- <img src="layouts/dashboard/assets/img/logo-ct.png" class="navbar-brand-img h-100" alt="main_logo"> -->
-          <span class="me-1 font-weight-bold text-white">مطعم </span>
+          <span class="me-1 font-weight-bold text-white text-center">{{name}}</span>
         </a>
       </div>
       
@@ -62,17 +69,20 @@ onMounted(()=>{
                   <i class="material-icons-round opacity-10">table_view</i>
                   </div>
                   <span class="nav-link-text me-1">طلبات قيد الإنتظار</span>
-               </router-link>
+              </router-link>
           </li>
 
-          <li class="nav-item">
-            <a class="nav-link " href="../pages/tables.html">
+          <li class="nav-item" v-if="order == 'true' && saved_orders == 'true'">
+            <router-link 
+            class="nav-link"
+            :to="{name : 'pastOrders' , params : {id : resturant_id}}">
               <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
                 <i class="material-icons-round opacity-10">table_view</i>
               </div>
-              <span class="nav-link-text me-1">الجداول</span>
-            </a>
+              <span class="nav-link-text me-1">سجلّ الطلبات</span>
+            </router-link>
           </li>
+          
           <li class="nav-item">
             <a class="nav-link " href="../pages/billing.html">
               <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">

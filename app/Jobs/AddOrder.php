@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Order;
 use App\Models\OrderContent;
+use App\Models\Resturant;
 
 class AddOrder implements ShouldQueue
 {
@@ -46,6 +47,9 @@ class AddOrder implements ShouldQueue
                 'count' => $this->order_contents[$ock],
             ]);
         }
+
+        Resturant::where('id', $this->resturant_id)
+            ->increment('orders_number');
         
     }
 }

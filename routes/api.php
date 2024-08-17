@@ -17,6 +17,37 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
+Route::post('/resturant/order', function(Request $request) {
+    try {
+        $request->validate([
+            'resturant_id' => 'required|integer|exists:resturants,id',
+            'table_number' => 'required|integer|min:1',
+            'order_contents' => 'required', 
+        ],[
+            'resturantId.required' => 'Restaurant ID is required!',
+            'resturantId.integer' => 'Restaurant ID should be a number!',
+            'resturantId.exists' => 'Restaurant ID does not match with restaurants table records!',
+            'tableNumber.required' => 'Table number is required!',
+            'tableNumber.integer' => 'Table number should be a number!',
+            'tableNumber.min' => 'Table number should be at least 1!',
+            'orderContents.required' => 'Order contents are required!',
+        ]);
+    } catch (ValidationException $e) {
+        return response()->json(['server : errors ->' => $e->errors()], 422);
+    }
+
+    $resturant = Resturant::where('id', $request->resturant_id)->first();
+    if ($resturant->service_type == 'per_order') {
+        AddOrderMonthly::dispatch($request->resturant_id,$request->table_number, $request->order_contents);
+    } else {
+        AddOrder::dispatch($request->resturant_id, $request->table_number, $request->order_contents);
+    }
+
+    return response()->json([
+        'status' => '200',
+    ]);
+});
+
 Route::get("/orders/{id}" , function($id){
     try{
         $resturant = Resturant::find($id);
@@ -77,6 +108,69 @@ Route::get("/orders/{id}" , function($id){
         ]);
     }
 });
+
+Route::get("/orders/implemented/{id}" , function($id){
+    try{
+        $resturant = Resturant::find($id);
+        if($resturant){
+            if($resturant->service_type == "per_order"){
+                $temp_orders = 
+                $resturant
+                ->MonthlyOrder()
+                ->select('id', 'table_number', 'created_at')
+                ->with(['Content' => function ($query) {
+                    $query->select('id', 'food_id', 'count' , 'order_id'); 
+                }])
+                ->where('implemented', 'true')
+                ->get();
+    
+                $orders = [];
+                foreach($temp_orders as $order){
+                    $orders[$order->id] = $order;
+                }   
+            }else{
+                $temp_orders = $resturant->Orders()->with('Content')->get();
+                $orders = [];
+                foreach($temp_orders as $order){
+                    $orders[$order->id] = $order;
+                } 
+            }
+            if($orders){
+                $food = [] ;
+                $temp_food = $resturant->Food()->select('id', 'name', 'price', 'discount')->get();
+                foreach($temp_food as $fo){
+                    $food += [$fo->id => $fo];
+                }
+                return response()->json([
+                    'status' => '200' ,
+                    'orders' => $orders ,
+                    'food' => $food , 
+                    'service_price' => $resturant->service_price ,
+                ]);
+            }else{
+                return response()->json([
+                    'status' => '404' ,
+                    'message' => 'no orders found' 
+
+                ]);
+            }
+        }
+        return response()->json([
+            'status' => '404' ,
+            'message' => 'no resturant found' 
+        ]);
+
+    }catch (ValidationException $e) {
+        return response()->json(['server_errors' => $e->errors(), 'status' => "422"]);
+    } catch (\Exception $e) {
+        // Log the exception for debugging
+        return response()->json([
+            'status' => '500',
+            'message' => 'Server error: ' . $e->getMessage(),
+        ]);
+    }
+});
+
 
 Route::post("/orders/implement",function(Request $request){
     try{
@@ -426,34 +520,3 @@ Route::get("/foodAndCategories/{id}",function($id){
     }
 });
 
-
-Route::post('/resturant/order', function(Request $request) {
-    try {
-        $request->validate([
-            'resturant_id' => 'required|integer|exists:resturants,id',
-            'table_number' => 'required|integer|min:1',
-            'order_contents' => 'required', 
-        ],[
-            'resturantId.required' => 'Restaurant ID is required!',
-            'resturantId.integer' => 'Restaurant ID should be a number!',
-            'resturantId.exists' => 'Restaurant ID does not match with restaurants table records!',
-            'tableNumber.required' => 'Table number is required!',
-            'tableNumber.integer' => 'Table number should be a number!',
-            'tableNumber.min' => 'Table number should be at least 1!',
-            'orderContents.required' => 'Order contents are required!',
-        ]);
-    } catch (ValidationException $e) {
-        return response()->json(['server : errors ->' => $e->errors()], 422);
-    }
-
-    $resturant = Resturant::where('id', $request->resturant_id)->first();
-    if ($resturant->service_type == 'per_order') {
-        AddOrderMonthly::dispatch($request->resturant_id,$request->table_number, $request->order_contents);
-    } else {
-        AddOrder::dispatch($request->resturant_id, $request->table_number, $request->order_contents);
-    }
-
-    return response()->json([
-        'status' => '200',
-    ]);
-});

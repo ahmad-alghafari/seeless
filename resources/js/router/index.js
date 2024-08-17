@@ -3,6 +3,7 @@ import {createRouter , createWebHistory} from "vue-router" ;
 import dashBoard from "../views/main.vue" ;
 import food from "../views/food.vue" ;
 import orders from "../views/orders.vue" ;
+import pastOrder from "../views/pastOrder.vue";
 
 
 
@@ -21,6 +22,11 @@ const routes = [
         path:'/dashboard/orders/:id',
         name:'orders',
         component: orders,
+    },
+    {
+        path : '/dashboard/pastOrders/:id' ,
+        name : 'pastOrders' ,
+        component : pastOrder,
     }
 ]
 

@@ -2,7 +2,10 @@
 import { onMounted, ref  , computed } from 'vue';
 import axios, { Axios } from 'axios';
 import { useRoute } from "vue-router";
+import { useToast } from 'vue-toastification';
+
 const route = useRoute();
+const toast = useToast();
 
 const foods = ref({});
 const categories = ref({});
@@ -27,7 +30,6 @@ const availablefoodCount = computed(() => {
 
 
 onMounted( async ()  => {
-  // console.log(process.env.MIX_APP_URL);
   id.value = route.params.id;
   fetching();
 });
@@ -60,15 +62,7 @@ const uploadfileshange = (event) => {
     console.log("file : " + file.value);
 }
 
-const print_food = () => {
 
-  console.log("food object contnets :");
-  for (const id in foods.value) {
-    console.log("id :" + id);
-    console.log("food :" + foods.value[id].name);
-
-  } 
-}
 
 const oppisit = (id) => {
   if(foods.value[id].availability == "availble"){
@@ -78,9 +72,44 @@ const oppisit = (id) => {
   }
 }
 
+
+const since = (date) => {
+    const currentDate = new Date();
+    const pastDate = new Date(date);
+    const diffInSeconds = Math.floor((currentDate - pastDate) / 1000);
+
+    let interval = Math.floor(diffInSeconds / 31536000);
+    if (interval > 1) {
+        return `منذ ${interval} سنة`;
+    }
+    
+    interval = Math.floor(diffInSeconds / 2592000);
+    if (interval > 1) {
+        return `منذ ${interval} شهر`;
+    }
+    
+    interval = Math.floor(diffInSeconds / 86400);
+    if (interval > 1) {
+        return `منذ ${interval} يوم`;
+    }
+    
+    interval = Math.floor(diffInSeconds / 3600);
+    if (interval > 1) {
+        return `منذ ${interval} ساعة`;
+    }
+    
+    interval = Math.floor(diffInSeconds / 60);
+    if (interval > 1) {
+        return `منذ ${interval} دقيقة`;
+    }
+    
+    return `منذ ${diffInSeconds} ثانية`;
+};
+
 // fetching methods ------
 const fetching = async ()  => {
-  console.log("fetching : start");
+
+  print("fetching : start");
 
      axios.get('http://127.0.0.1:8000/api/foodAndCategories/'+id.value).then(
         function (response){
@@ -89,16 +118,18 @@ const fetching = async ()  => {
                 categories.value = response.data.categories ;
             }
             isLoading.value = false ;
-            console.log("fetching : end");
+            print("fetching : end");
         }
     ).catch(
         function (error) {
             console.log("catch error : " + error);
+            print("fetching : end");
         }
     );
 }
 
 const submit = async () => {
+  print("add food start");
     const formData = new FormData();
     formData.append('name', foodFucas.value.name);
     formData.append('category_id', foodFucas.value.category_id);
@@ -118,22 +149,24 @@ const submit = async () => {
         });
 
         if (response.data.status === "200") {
-            console.log("response status: " + response.data.status);
             foodFucas.value = response.data.food;
             foods.value[foodFucas.value.id] = foodFucas.value;
+            toast.success('تم إضافة الطعام بنجاح' , {timeout : 1000});
         } else {
             console.log("message: " + response.data.message);
+            toast.error('حدث خطأ ما' , {timeout : 1000});
         }
-        console.log("fetching: end with response");
+        print("add food end");
     } catch (error) {
-        console.log("catch error: " + error);
-        console.log("fetching: end with catch");
+        toast.error('حدث خطأ ما' , {timeout : 1000});
+        print("add food end");
     }
 
     foodFucas.value = {};
 }
 
 const submitchange = async () => {
+  print("change food start");
     const formData = new FormData();
     formData.append('name', foodFucas.value.name);
     formData.append('category_id', foodFucas.value.category_id);
@@ -153,25 +186,24 @@ const submitchange = async () => {
                 'Content-Type': 'multipart/form-data'
             }
         });
-
         if (response.data.status === "200") {
-            console.log("response status: " + response.data.status);
             foodFucas.value.updated_at = response.data.updated_at;
             foodFucas.value.path = response.data.path;
             foods.value[foodFucas.value.id] = foodFucas.value;
+            toast.success('تم إضافة الطعام بنجاح' , {timeout : 1000});
         } else {
-            console.log("message: " + response.data.message);
+          toast.error('حدث خطأ ما' , {timeout : 1000});
         }
-        console.log("fetching: end with response");
+        print("change food end");
     } catch (error) {
-        console.log("catch error: " + error);
-        console.log("fetching: end with catch");
+        toast.error('حدث خطأ ما' , {timeout : 1000});
+        print("change food end");
     }
-
     foodFucas.value = {};
 }
 
 const postChangStatus = async (id) => {
+  print("change status of food start");
     let temp = oppisit(id);
     axios.post("http://127.0.0.1:8000/api/food/status" , {
         status : oppisit(id) ,
@@ -180,33 +212,40 @@ const postChangStatus = async (id) => {
         if(response.data.status == "200" ){
             foods.value[id].availability = temp ;
             foods.value[id].updated_at  = response.data.updated_at ;
-            console.log(temp);
+            toast.success('تم تغيير حالة الطعام بنجاح' , {timeout : 1000});
         }else{
-          console.log(response.data.message);
+          toast.error('حدث خطأ ما' , {timeout : 1000});
         }
-        console.log("change status end");
-
+        print("change status of food end");
     }).catch(
         function (error) {
-            console.log("catch error : " + error);
-            console.log("change status end");
+          toast.error('حدث خطأ ما' , {timeout : 1000});
+          print("change status of food end");
         }
     );
+
 }
 
+
+
 const deleteFood = async (id) =>{
+  print("delete food start");
   axios.delete("http://127.0.0.1:8000/api/food/delete/"+id )
     .then(
       function(response){
         if(response.data.status == "200" ){
             delete foods.value[id];
+            toast.success('تم حذف الطعام بنجاح' , {timeout : 1000});
+        }else{
+          toast.error('حدث خطأ ما' , {timeout : 1000});
         }
-        console.log(response.data.message);
+        print("delete food end");
+
     })
     .catch(
         function (error) {
-            console.log("catch error : " + error);
-            console.log("change status end");
+          toast.error('حدث خطأ ما' , {timeout : 1000});
+          print("delete food end");
         }
     );
 }
@@ -219,17 +258,20 @@ const submitchangecategory = async () =>{
     function(response){
       if(response.data.status == "200"){
         categories.value[categoryFucas.value.id] = categoryFucas.value.name ;
+        toast.success('تم تعديل الصنف بنجاح' , {timeout : 1000});
       }else{
-        dd("message : " , response.data.message)
+        toast.error('حدث خطأ ما' , {timeout : 1000});
       }
       freeCategoryFuces();
+      print("change name of category end");
+
     }
   ).catch(
         function (error) {
-            dd("catch error" , error);
+          toast.error('حدث خطأ ما' , {timeout : 1000});
+          print("change name of category end");
         }
   );
-  print("change name of category end");
 }
 
 const deletecategory = async () =>{
@@ -238,17 +280,20 @@ const deletecategory = async () =>{
   ).then(function(response){
     if(response.data.status == '200'){
       delete categories.value[categoryFucas.value.id];
+      toast.success('تم حذف الصنف بنجاح' , {timeout : 1000});
+
     }else{
-      dd("message : " , response.data.message);
+      toast.error('حدث خطأ ما' , {timeout : 1000});
     }
     freeCategoryFuces();
+    print("delete category end");
 
   }).catch(
     function (error) {
-      dd("catch error" , error);
+      toast.error('حدث خطأ ما' , {timeout : 1000});
+      print("delete category end");
     }
   );
-  print("delete category end");
 }
 
 const addcategory = async () => {
@@ -259,17 +304,19 @@ const addcategory = async () => {
     function(response){
       if(response.data.status == "200"){
         categories.value[response.data.id] = categoryFucas.value.name ;
+        toast.success('تم إضافة الصنف بنجاح' , {timeout : 1000});
       }else{
-        dd("message : " , response.data.message)
+        toast.error('حدث خطأ ما' , {timeout : 1000});
       }
       freeCategoryFuces();
+      print("add category end");
     }
   ).catch(
         function (error) {
-            dd("catch error" , error);
+          toast.error('حدث خطأ ما' , {timeout : 1000});
+          print("add category end");
         }
   );
-  print("add category end");
 }
 </script>
 
@@ -279,14 +326,14 @@ const addcategory = async () => {
         <div class="col-lg-3 col-sm-6">
           <div class="card">
             <div class="card-header p-3 pt-2">
-                <button type="button" data-bs-toggle="modal" data-bs-target="#addfood" class="custom-button" @click="freeFoodFuces">
+                <button type="button" data-bs-toggle="modal" data-bs-target="#addfood" class="custom-button" @click="freeFoodFuces" style="border: 0px  ; border-width: 0;">
                     <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
                         <i class="material-icons opacity-10">add</i>
                     </div>
                 </button>
               <div class="text-start pt-1">
                 <p class="text-sm mb-0 text-capitalize">إضافة</p>
-                <h4 class="mb-0">طعام</h4>
+                <h4 class="text-center">طعام</h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -305,7 +352,7 @@ const addcategory = async () => {
               </div>
               <div class="text-start pt-1">
                 <p class="text-sm mb-0 text-capitalize">عدد الأطعمة</p>
-                <h4 class="mb-0">{{ foodCount }}</h4>
+                <h4 class="text-center">{{ foodCount }}</h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -321,7 +368,7 @@ const addcategory = async () => {
               </div>
               <div class="text-start pt-1">
                 <p class="text-sm mb-0 text-capitalize">عدد الأطعمة المتاحة</p>
-                <h4 class="mb-0">{{ availablefoodCount }}</h4>
+                <h4 class="text-center">{{ availablefoodCount }}</h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -344,12 +391,12 @@ const addcategory = async () => {
                 <table class="table align-items-center mb-0">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">الأسم</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">الصنف</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">التوفر</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">السعر</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">التخفيض</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">زمن آخر تعديل</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder ">الأسم</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder ">الصنف</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder ">التوفر</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder "> السعر ل.س</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder ">التخفيض</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder ">زمن آخر تعديل</th>
                       <th class="text-secondary opacity-7"></th>
                       <th class="text-secondary opacity-7"></th>
                     </tr>
@@ -366,29 +413,52 @@ const addcategory = async () => {
                           </div>
                         </div>
                       </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ categories[food.category_id]}}</p>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                            <span class="badge badge-sm bg-gradient-success" v-if="food.availability == 'availble'" @click="postChangStatus(food.id)">متوفر</span>
-                            <span class="badge badge-sm bg-gradient-secondary" v-else @click="postChangStatus(food.id)">غير متوفر</span>
 
-                        
+                      <td>
+                        <p class="text-center font-weight-bold ">{{ categories[food.category_id]}}</p>
                       </td>
+
+                      <td class="align-middle text-center text-sm">
+                        <!-- <span class="badge badge-sm bg-gradient-success"  @click="postChangStatus(food.id)">متوفر</span> -->
+                        <button v-if="food.availability == 'availble'" 
+                        class="btn bg-gradient-success w-100" 
+                        @click="postChangStatus(food.id)"
+                        type="button">
+                        متوفر
+                      </button>
+                        <!-- <span class="badge badge-sm bg-gradient-secondary" v-else @click="postChangStatus(food.id)">غير متوفر</span> -->
+                      <button 
+                        v-else
+                        
+                        class="btn bg-gradient-warning w-100  "
+                        @click="postChangStatus(food.id)"
+                        >
+                        غير متوفر
+                      </button>
+                      </td>
+
                       <td class="align-middle text-center">
                         <span class="text-secondary text-xs font-weight-bold">{{ food.price }}</span>
                       </td>
+
                       <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold" v-if="food.discount == null">لا</span>
+                        <span class="text-secondary text-xs font-weight-bold" v-if="food.discount == null">لا يوجد</span>
                         <span class="text-secondary text-xs font-weight-bold" v-else>{{ food.discount }}</span>
                       </td>
+
                       <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold">{{ food.updated_at.split('T')[0] }}</span>
+                        <!-- <span class="text-secondary text-xs font-weight-bold">{{ food.updated_at.split('T')[0] }}</span> -->
+                        <span class="text-secondary text-xs font-weight-bold">{{ since(food.updated_at) }}</span>
+
                       </td>
-                      <td class="align-middle">
-                        <button type="button" @click="getFood(food.id)" class="btn btn-secondary font-weight-bold" data-bs-toggle="modal" data-bs-target="#editfood" >
+                      <td class="d-flex justify-content-center text-center">
+                        <!-- <div class=""> -->
+
+                          
+                          <button type="button" @click="getFood(food.id)" class="btn bg-gradient-info w-100" data-bs-toggle="modal" data-bs-target="#editfood" >
                             تعديل
-                        </button>
+                          </button>
+                        <!-- </div> -->
                       </td>
                       <td class="align-middle">
                         <button type="button" @click="deleteFood(food.id)" class="btn btn-danger font-weight-bold" >
@@ -397,9 +467,6 @@ const addcategory = async () => {
                       </td>
                     </tr>
                   </tbody>
-                  <!-- <tbody >
-                    loading
-                  </tbody> -->
                 </table>
               </div>
             </div>
@@ -411,14 +478,14 @@ const addcategory = async () => {
         <div class="col-lg-3 col-sm-6">
           <div class="card">
             <div class="card-header p-3 pt-2">
-                <button type="button" data-bs-toggle="modal" data-bs-target="#addcategory" class="custom-button" @click="freeCategoryFuces">
+                <button type="button" data-bs-toggle="modal" data-bs-target="#addcategory" class="custom-button" @click="freeCategoryFuces" style="border-width: 0; border: hidden;">
                     <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
                         <i class="material-icons opacity-10">add</i>
                     </div>
                 </button>
               <div class="text-start pt-1">
                 <p class="text-sm mb-0 text-capitalize">إضافة</p>
-                <h4 class="mb-0">صنف</h4>
+                <h4 class="text-center">صنف</h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -437,7 +504,7 @@ const addcategory = async () => {
               </div>
               <div class="text-start pt-1">
                 <p class="text-sm mb-0 text-capitalize">عدد الأصناف</p>
-                <h4 class="mb-0">{{ categoriesCount }}</h4>
+                <h4 class="text-center">{{ categoriesCount }}</h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -461,30 +528,30 @@ const addcategory = async () => {
                 <table class="table align-items-center justify-content-center mb-0">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">الأسم</th>
-                      <th class="text-secondary opacity-7"></th>
+                      <th class="text-uppercase text-secondary text-start font-weight-bolder opacity-7" style="padding-right: 110px;">الأسم</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="id in Object.keys(categories)" :key="id">
-                      <td>
-                        <div class="d-flex px-2">
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">{{ categories[id] }}</h6>
+                      <td class="align-middle text-center">
+                        <div class="row">
+                          <div class="col-3 d-flex align-items-center justify-content-center">
+                            <div class="text-center">
+                              <h6>{{ categories[id] }}</h6>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <button type="button" @click="getCategory(id)" class="btn btn-secondary font-weight-bold" data-bs-toggle="modal" data-bs-target="#editcategory" >
+                        <div class="col-1">
+                          <button type="button" @click="getCategory(id)" class="btn btn-secondary font-weight-bold" data-bs-toggle="modal" data-bs-target="#editcategory" >
                             تعديل
-                        </button>
-                        
-                      </td>
-                      <td class="align-middle">
-                        <button type="button" @click="getCategory(id)" class="btn btn-danger font-weight-bold" data-bs-toggle="modal" data-bs-target="#deletecategory">
+                          </button>
+                        </div>
+                        <div class="col-1">
+                          <button type="button" @click="getCategory(id)" class="btn btn-danger font-weight-bold" data-bs-toggle="modal" data-bs-target="#deletecategory">
                             حذف
-                        </button>
-                      </td>
+                          </button>
+                        </div>
+                      </div>
+                    </td>
                     </tr>
                   </tbody>
                 </table>

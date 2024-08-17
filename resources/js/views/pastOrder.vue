@@ -2,18 +2,18 @@
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRoute } from "vue-router";
-import { useToast } from 'vue-toastification';
 
 const route = useRoute();
-const toast = useToast();
 
 const orders = ref();
+const orderCount = ref(0);
 const foods = ref();
 const id = ref();
 const is_loading = ref(true);
 const selectedOrder = ref({});
 const selectedOrderContent = ref({});
 const total = ref(0);
+const service_price = ref();
 
 
 
@@ -21,6 +21,7 @@ onMounted( () => {
     is_loading.value = true ;
     id.value = route.params.id;
     fetchinOrders();
+    print("orderCount : ", orderCount.value);
 });
 
 const dd = (obj) =>{
@@ -33,8 +34,6 @@ const print = (variable) =>{
 const log = (string = "" ,variable) => {
   console.log(string +" : "+ variable);
 } 
-
-
 
 const since = (date) => {
     const currentDate = new Date();
@@ -87,15 +86,16 @@ const calck = () =>{
   });
 }
 // fetching methods --------
-
 const fetchinOrders = () => {
     print("get orders start");
-    axios.get("http://127.0.0.1:8000/api/orders/"+id.value).then(
+    axios.get("http://127.0.0.1:8000/api/orders/implemented/"+id.value).then(
         function(response){
             if(response.data.status == '200'){
                 orders.value = response.data.orders ;
                 is_loading.value = false ;
                 foods.value = response.data.food;
+                service_price.value = response.data.service_price ;
+                orderCount.value = Object.keys(orders.value).length;
             }else{
                 log("server error" , response.data.message)
             }
@@ -108,39 +108,51 @@ const fetchinOrders = () => {
         }
     );
 }
-
-const implement = async (order) =>{
-  print("implement start");
-  axios.post("http://127.0.0.1:8000/api/orders/implement" , {
-    order_id : order  ,
-    id : id.value
-  }).then(function(response){
-    if(response.data.status == '200'){
-      delete orders.value[order];
-      toast.success('تمت المعالجة بنجاح' , {timeout : 1000});
-    }else{
-      log("server error",response.data.message);
-    }
-    print("implement end");
-  }).catch(function(error){
-    log("local error" , error);
-    print("implement end");
-  });
-}
-
-//toast
-const toastSuccess = () => {
-  // toast.success('تمت المعالجة بنجاح');
-}
 </script>
+
 <template>
     <div class="container-fluid py-4">
+        <div class="row">
+        <div class="col-lg-3 col-sm-6 mb-lg-0 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">leaderboard</i>
+              </div>
+              <div class="text-start pt-1">
+                <p class="text-sm mb-0 text-capitalize">سعر الخدمة لكل طلب</p>
+                <h4 class="mb-0">{{ service_price }}</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6 mb-lg-0 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">leaderboard</i>
+              </div>
+              <div class="text-start pt-1">
+                <p class="text-sm mb-0 text-capitalize">إجمالي التكلفة</p>
+                <h4 class="mb-0" v-if="orders">{{ orderCount * service_price }}</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
       <div class="row">
         <div class="col-12">
           <div class="card my-4">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
               <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                <h6 class="text-white text-capitalize ps-3">الطلبات الحالية</h6>
+                <h6 class="text-white text-capitalize ps-3"> سجل الطلبات </h6>
               </div>
             </div>
             <div class="card-body px-0 pb-2" v-if="orders">
@@ -149,8 +161,7 @@ const toastSuccess = () => {
                   <thead class="text-center">
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">منذ</th>
-                      <th class=" text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"> طاولة رقم</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"></th>
+                      <th class=" text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">طاولة رقم</th>
                       <th class="text-secondary opacity-7"></th>
                     </tr>
                   </thead>
@@ -162,11 +173,7 @@ const toastSuccess = () => {
                       <td>
                         <p class="text-center text-xs text-secondary ">{{ order.table_number }}</p>
                       </td>
-                      <td class="align-middle text-center text-sm">
-                        <button type="button" class="btn bg-gradient-secondary toast-btn" @click="implement(order.id)">
-                          تمت المعالجة
-                        </button>
-                      </td>
+                      
                       <td class="align-middle">
                         <button type="button" class="btn btn-success font-weight-bold" data-bs-toggle="modal" data-bs-target="#content" @click="setSelectedOrder(order.id)">
                           معاينة
@@ -214,6 +221,5 @@ const toastSuccess = () => {
       </div>
     </div>
   </div>
-
   
 </template>

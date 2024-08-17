@@ -8,6 +8,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\MonthlyOrder;
+use App\Models\Resturant;
 use App\Models\MonthlyOrderContent;
 class AddOrderMonthly implements ShouldQueue
 {
@@ -45,5 +46,8 @@ class AddOrderMonthly implements ShouldQueue
                 'count' => $this->order_contents[$ock],
             ]);
         }
+
+        Resturant::where('id', $this->resturant_id)
+            ->increment('orders_number');
     }
 }

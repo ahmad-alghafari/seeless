@@ -4,14 +4,14 @@ import foodList from "./foodList.vue";
 import foter from "./foter.vue";
 import navBar from "./navBar.vue";
 
-const resturant_info = ref({});
+const resturant = ref({});
 const categories = ref({});
 const food = ref({});
 const tableNumber = ref();
 
 onMounted(() => {
-  if (window.resturant_info) {
-    resturant_info.value = window.resturant_info;
+  if (window.resturant) {
+    resturant.value = window.resturant;
   }
   if (window.categories) {
     categories.value = window.categories;
@@ -27,8 +27,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <navBar :returantName="resturant_info.name" />
-    <foodList  :food="food" :categories="categories"  :resturantId="resturant_info.id" :tableNumber="tableNumber" />
+    <navBar :returantName="resturant.name" />
+    <foodList  :food="food" :categories="categories"  :resturantId="resturant.id" :tableNumber="tableNumber" />
     <foter/>
 </template>
 

@@ -11,34 +11,34 @@ Auth::routes();
 
 Route::get('/dashboard/{vue_capture?}', function() {
     $resturant = Auth::user()->resturant;
-    $id = $resturant->id;
-    $service_type = $resturant->service_type ; 
-    if(in_array($service_type , ['per_order' , 'monthly' , 'one_year'])){
+    if(in_array($resturant->service_type , ['per_order' , 'monthly' , 'one_year'])){
         $order = 'true' ;
+        $saved_orders = $resturant->service_type == 'per_order'?  'true':'false';
     }else{
         $order = 'false';
     }
-    return view('dashboard.index',compact('id' ,'service_type' , 'order'));
+    return view('dashboard.index',[
+        'id' => $resturant->id,
+        'service_type' => $resturant->service_type,
+        'order' => $order,
+        'name' => $resturant->name,
+        'saved_orders' => $saved_orders
+    ]);
 })->where('vue_capture', '[\/\w\.-]*')->middleware('auth');
 
-Route::get('/menu/{resturantName}/{tableNumber}', function ($resturantName , $tableNumber) {
-    $resturant_info = Resturant::where('name' ,$resturantName)->first();
-    if($resturant_info && $resturant_info->status == "run" ){
-
-        $food_response = $resturant_info->Food;
+Route::get('/seless/menu/{resturantName}/{tableNumber}', function ($resturantName , $tableNumber) {
+    $resturant = Resturant::where('name' ,$resturantName)->first();
+        $food_response = $resturant->Food;
         $food = [] ;
         foreach($food_response as $fo){
             $food += [$fo->id => $fo];
         }
 
-        $categories_response = Category::where('resturant_id',$resturant_info->id)->get(['id','name']);
+        $categories_response = Category::where('resturant_id',$resturant->id)->get(['id','name']);
         $categories = [];
         foreach($categories_response as $cat){
             $categories += [$cat->id => $cat->name]; 
         }
 
-        return view('layouts.'.$resturant_info->tamplate_number.'.menu',compact('resturant_info' , 'categories','food' , 'tableNumber'));
-    }else{
-        return "404 , the web is off";
-    }
-});
+        return view('layouts.'.$resturant->tamplate_number.'.menu',compact('resturant' , 'categories','food' , 'tableNumber'));
+})->middleware('run');
