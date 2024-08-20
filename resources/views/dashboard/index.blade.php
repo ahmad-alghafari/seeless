@@ -14,7 +14,7 @@
   <link href="{{asset('layouts/dashboard/assets/css/nucleo-icons.css')}}" rel="stylesheet" />
   <link href="{{asset('layouts/dashboard/assets/css/nucleo-svg.css')}}" rel="stylesheet" />
   <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  {{-- <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
@@ -30,10 +30,10 @@
 
 <script>
   window.resturant_id = {{$id}} ;
-  window.service_type = @json($service_type) ;
   window.order = @json($order) ;
   window.name = @json($name);
   window.saved_orders = @json($saved_orders);
+  window.owner_id = @json(Auth::user()->id);
 </script>
 
 <div id="dashboard">
@@ -41,7 +41,8 @@
 </div>
 
 
-
+  <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <!--   Core JS Files   -->
   <script src="{{asset('layouts/dashboard/assets/js/core/popper.min.js')}}"></script>
   <script src="{{asset('layouts/dashboard/assets/js/core/bootstrap.min.js')}}"></script>

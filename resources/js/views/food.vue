@@ -30,7 +30,9 @@ const availablefoodCount = computed(() => {
 
 
 onMounted( async ()  => {
-  id.value = route.params.id;
+  if(window.resturant_id){
+      id.value = window.resturant_id;
+    }
   fetching();
 });
 

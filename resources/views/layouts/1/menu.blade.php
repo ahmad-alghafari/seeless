@@ -40,7 +40,7 @@
 <body class="sub_page">
 
   <script>
-    window.resturant_info = @json($resturant);
+    window.resturant = @json($resturant);
     window.categories = @json($categories);
     window.food = @json($food);
     window.tableNumber = {{$tableNumber}} ; 

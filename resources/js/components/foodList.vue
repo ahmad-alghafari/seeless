@@ -89,7 +89,7 @@ const submit = () => {
 };
 
 const sendRequest = async () => {
-    const response = await axios.post('http://127.0.0.1:8000/api/resturant/order' 
+    axios.post('http://127.0.0.1:8000/api/orders/add' 
       ,{
         resturant_id  : props.resturantId , 
         table_number : props.tableNumber ,
@@ -289,7 +289,7 @@ const isEmpty = () => {
           <p>قيمة الفاتورة : {{ total }} </p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" @click="submit"  :disabled="isempty">إرسال الطلب</button>
+          <button type="button" class="btn btn-primary" @click="submit"  :disabled="isempty" data-bs-dismiss="modal">إرسال الطلب</button>
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteCartContents" :disabled="isempty">حذف المحتويات</button>
           <button type="button" class="btn btn-secondry" data-bs-dismiss="modal" aria-label="Close" >إغلاق</button>
 

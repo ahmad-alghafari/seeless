@@ -14,4 +14,16 @@ export default defineConfig({
         }),
         vue(),
     ],
+
+    build: {
+        rollupOptions: {
+            input: {
+                app: 'resources/js/app.js',
+                'service-worker': 'public/service-worker.js',
+            },
+            output: {
+                entryFileNames: '[name].js',
+            },
+        },
+    },
 });

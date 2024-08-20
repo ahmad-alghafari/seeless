@@ -1,27 +1,44 @@
 <script setup>
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
-import { useRoute } from "vue-router";
+import { onMounted, ref ,onBeforeMount } from 'vue';
+import Pusher from 'pusher-js';
 import { useToast } from 'vue-toastification';
 
-const route = useRoute();
 const toast = useToast();
-
 const orders = ref();
 const foods = ref();
 const id = ref();
+const owner_id = ref();
 const is_loading = ref(true);
 const selectedOrder = ref({});
-const selectedOrderContent = ref({});
+const selectedOrderContent = ref({});   
 const total = ref(0);
 
-
+onBeforeMount( () => {
+  id.value = window.resturant_id;
+  owner_id.value = window.owner_id;
+  print("auth " + owner_id.value);
+});
 
 onMounted( () => {
-    is_loading.value = true ;
-    id.value = route.params.id;
-    fetchinOrders();
+  is_loading.value = true ;
+  fetchinOrders();
+  print("auth " + owner_id.value);
+  
+  const pusher = new Pusher('7d71734b3bda20e881ea', {
+    cluster: 'ap2'
+  });
+  const channel = pusher.subscribe('orders-resturant-'+owner_id.value);
+  channel.bind('OrderNotification', function(data) {
+      orders.value = { [data.order.id]: data.order, ...orders.value };
+      toast.success("تم استلام طلب جديد", {
+        timeout: 3000,
+      });
+    });
 });
+  
+Pusher.logToConsole = true;
+
 
 const dd = (obj) =>{
   console.log("obj val : ", JSON.stringify(obj.value, null, 2));
@@ -33,8 +50,6 @@ const print = (variable) =>{
 const log = (string = "" ,variable) => {
   console.log(string +" : "+ variable);
 } 
-
-
 
 const since = (date) => {
     const currentDate = new Date();
@@ -87,16 +102,16 @@ const calck = () =>{
   });
 }
 // fetching methods --------
-
 const fetchinOrders = () => {
     print("get orders start");
     axios.get("http://127.0.0.1:8000/api/orders/"+id.value).then(
         function(response){
             if(response.data.status == '200'){
                 orders.value = response.data.orders ;
-                is_loading.value = false ;
                 foods.value = response.data.food;
+                is_loading.value = false ;
             }else{
+                is_loading.value = false ;
                 log("server error" , response.data.message)
             }
             print("get orders end");
@@ -105,6 +120,7 @@ const fetchinOrders = () => {
         function(error){
             log("error" , error);
             print("get orders end");
+            is_loading.value = false ;
         }
     );
 }
@@ -127,11 +143,6 @@ const implement = async (order) =>{
     print("implement end");
   });
 }
-
-//toast
-const toastSuccess = () => {
-  // toast.success('تمت المعالجة بنجاح');
-}
 </script>
 <template>
     <div class="container-fluid py-4">
@@ -148,23 +159,23 @@ const toastSuccess = () => {
                 <table class="table align-items-center mb-0">
                   <thead class="text-center">
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">منذ</th>
-                      <th class=" text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"> طاولة رقم</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"></th>
+                      <th class="text-uppercase text-secondary  font-weight-bolder opacity-7">منذ</th>
+                      <th class=" text-uppercase text-secondary  font-weight-bolder opacity-7 ps-2"> طاولة رقم</th>
+                      <th class="text-center text-uppercase text-secondary  font-weight-bolder opacity-7"></th>
                       <th class="text-secondary opacity-7"></th>
                     </tr>
                   </thead>
-                  <tbody v-if="!is_loading"> 
+                  <tbody v-if="!is_loading" id="orders"> 
                     <tr v-for="order in orders" :key="order.index" >
                       <td>
-                        <p class="text-center text-xs text-secondary ">{{ since(order.created_at) }}</p>
+                        <p class="text-center text-secondary ">{{ since(order.created_at) }}</p>
                       </td>
                       <td>
-                        <p class="text-center text-xs text-secondary ">{{ order.table_number }}</p>
+                        <p class="text-center text-secondary ">{{ order.table_number }}</p>
                       </td>
                       <td class="align-middle text-center text-sm">
-                        <button type="button" class="btn bg-gradient-secondary toast-btn" @click="implement(order.id)">
-                          تمت المعالجة
+                        <button type="button" class="btn btn-info font-weight-bold" @click="implement(order.id)">
+                          معالجة
                         </button>
                       </td>
                       <td class="align-middle">
@@ -172,6 +183,7 @@ const toastSuccess = () => {
                           معاينة
                         </button>
                       </td>
+                      
                     </tr>
                   </tbody>
                 </table>

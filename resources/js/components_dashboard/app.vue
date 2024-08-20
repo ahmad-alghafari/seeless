@@ -3,18 +3,11 @@ import settings from "../components_dashboard/settings.vue";
 import foter from "./footer.vue";
 import navbar from "../components_dashboard/navbar.vue";
 import {ref , onMounted} from "vue" ; 
-const resturant_id = ref();
-const service_type = ref();
 const order = ref();
 const name = ref();
 const saved_orders = ref();
+
 onMounted(()=>{
-  if(window.resturant_id){
-    resturant_id.value = window.resturant_id;
-  }service_type
-  if(window.service_type){
-    service_type.value = window.service_type;
-  }
   if(window.order){
     order.value = window.order;
   }
@@ -24,6 +17,7 @@ onMounted(()=>{
   if(window.saved_orders){
     saved_orders.value = window.saved_orders;
   }
+  
 });
 </script>
 
@@ -51,20 +45,25 @@ onMounted(()=>{
               <span class="nav-link-text me-1">لوحة القيادة</span>
             </router-link>
           </li>
+
+
           <li class="nav-item">
                 <router-link 
-                v-if="resturant_id"
-                :to="{name : 'food' , params : { id : resturant_id }}" class="nav-link">
+                :to="{name : 'food' }" class="nav-link">
                   <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
                   <i class="material-icons-round opacity-10">table_view</i>
                   </div>
                   <span class="nav-link-text me-1">الأطعمة و الأصناف</span>
                </router-link>
           </li>
+
+
+
+
           <li class="nav-item" v-if="order == 'true'">
                 <router-link 
                 
-                :to="{name : 'orders' , params : {id : resturant_id}}" class="nav-link">
+                :to="{name : 'orders' }" class="nav-link">
                   <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
                   <i class="material-icons-round opacity-10">table_view</i>
                   </div>
@@ -75,7 +74,7 @@ onMounted(()=>{
           <li class="nav-item" v-if="order == 'true' && saved_orders == 'true'">
             <router-link 
             class="nav-link"
-            :to="{name : 'pastOrders' , params : {id : resturant_id}}">
+            :to="{name : 'pastOrders' }">
               <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
                 <i class="material-icons-round opacity-10">table_view</i>
               </div>

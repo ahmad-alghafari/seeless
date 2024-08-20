@@ -7,6 +7,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+// Route::get('/', function() {
+//     dd(Resturant::find(2)->User->id);
+//     return "kk"; 
+// });
+
+
+Route::get('/service-worker.js', function() {
+    return response()->file(public_path('service-worker.js'));
+});
+
 Auth::routes();
 
 Route::get('/dashboard/{vue_capture?}', function() {

@@ -10,6 +10,8 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\Order;
 use App\Models\OrderContent;
 use App\Models\Resturant;
+use App\Events\OrderNotification;
+use App\Events\MonthlyOrderNotification;
 
 class AddOrder implements ShouldQueue
 {
@@ -50,6 +52,22 @@ class AddOrder implements ShouldQueue
 
         Resturant::where('id', $this->resturant_id)
             ->increment('orders_number');
+
+            
+        $order = $order->load(['Content', 'Resturant.User']);
+        $orderData = [
+            'id' => $order->id,
+            'table_number' => $order->table_number,
+            'created_at' => $order->created_at,
+            'content' => $order->Content->map(function ($content) {
+                return [
+                    'food_id' => $content->food_id,
+                    'count' => $content->count,
+                ];
+            }),
+            'user_id' => $order->Resturant->User->id,
+        ];
+        MonthlyOrderNotification::dispatch($orderData);
         
     }
 }

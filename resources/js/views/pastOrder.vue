@@ -19,9 +19,10 @@ const service_price = ref();
 
 onMounted( () => {
     is_loading.value = true ;
-    id.value = route.params.id;
+    if(window.resturant_id){
+      id.value = window.resturant_id;
+    }
     fetchinOrders();
-    print("orderCount : ", orderCount.value);
 });
 
 const dd = (obj) =>{
@@ -221,5 +222,5 @@ const fetchinOrders = () => {
       </div>
     </div>
   </div>
-  
+
 </template>

@@ -17,7 +17,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-Route::post('/resturant/order', function(Request $request) {
+Route::post('/orders/add', function(Request $request) {
     try {
         $request->validate([
             'resturant_id' => 'required|integer|exists:resturants,id',
@@ -61,6 +61,7 @@ Route::get("/orders/{id}" , function($id){
                     $query->select('id', 'food_id', 'count' , 'order_id'); 
                 }])
                 ->where('implemented', 'false')
+                ->orderBy('created_at', 'desc')
                 ->get();
     
                 $orders = [];
@@ -68,7 +69,7 @@ Route::get("/orders/{id}" , function($id){
                     $orders[$order->id] = $order;
                 }   
             }else{
-                $temp_orders = $resturant->Orders()->with('Content')->get();
+                $temp_orders = $resturant->Order()->with('Content')->get();
                 $orders = [];
                 foreach($temp_orders as $order){
                     $orders[$order->id] = $order;
@@ -122,6 +123,7 @@ Route::get("/orders/implemented/{id}" , function($id){
                     $query->select('id', 'food_id', 'count' , 'order_id'); 
                 }])
                 ->where('implemented', 'true')
+                ->orderBy('created_at', 'desc')
                 ->get();
     
                 $orders = [];
@@ -183,10 +185,19 @@ Route::post("/orders/implement",function(Request $request){
             ]);
         }
 
-        $query = $resturant
-        ->MonthlyOrder()
-        ->where('id', $request->order_id)
-        ->update(['implemented' => 'true']);
+        
+        $query = null;
+        if($resturant->service_type == "per_order"){
+            $query = $resturant
+            ->MonthlyOrder()
+            ->where('id', $request->order_id)
+            ->update(['implemented' => 'true']);
+        }else{
+            $query = $resturant
+            ->Order()
+            ->where('id', $request->order_id)
+            ->delete();
+        }
 
         if ($query) {
             return response()->json([
@@ -209,8 +220,8 @@ Route::post("/orders/implement",function(Request $request){
     }
 });
 
-Route::delete("/orders/delete/{id}" , function(Request $request , $id){
-});
+// Route::delete("/orders/delete/{id}" , function(Request $request , $id){
+// });
 
 // ---------- category --------------
 

@@ -14,17 +14,17 @@ const routes = [
         component: dashBoard
     },
     {
-        path:'/dashboard/food/:id',
+        path:'/dashboard/food',
         name:'food',
         component: food,
     },
     {
-        path:'/dashboard/orders/:id',
+        path:'/dashboard/orders',
         name:'orders',
         component: orders,
     },
     {
-        path : '/dashboard/pastOrders/:id' ,
+        path : '/dashboard/pastOrders' ,
         name : 'pastOrders' ,
         component : pastOrder,
     }

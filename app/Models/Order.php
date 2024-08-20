@@ -34,4 +34,10 @@ class Order extends Model
     public function belongsToResturant():BelongsTo{
         return $this->belongsTo(Resturant::class);
     }
+
+    public function Resturant() : BelongsTo {
+        return $this->belongsTo(Resturant::class);
+    }
+
+
 }
