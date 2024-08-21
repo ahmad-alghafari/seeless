@@ -83,6 +83,16 @@ onMounted(()=>{
           </li>
           
           <li class="nav-item">
+            <router-link :to="{name : 'profile' }" class="nav-link">
+                <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
+                  <i class="material-icons-round opacity-10">person</i>
+                </div>
+                <span class="nav-link-text me-1">حساب تعريفي</span>
+            </router-link>
+          </li>
+
+
+          <li class="nav-item">
             <a class="nav-link " href="../pages/billing.html">
               <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
                 <i class="material-icons-round opacity-10">receipt_long</i>
@@ -90,30 +100,14 @@ onMounted(()=>{
               <span class="nav-link-text me-1">الفواتير</span>
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link " href="../pages/notifications.html">
-              <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
-                <i class="material-icons opacity-10">notifications</i>
-              </div>
-              <span class="nav-link-text me-1">إشعارات</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link " href="../pages/profile.html">
-              <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
-                <i class="material-icons-round opacity-10">person</i>
-              </div>
-              <span class="nav-link-text me-1">حساب تعريفي</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link " href="../pages/sign-in.html">
-              <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
-                <i class="material-icons-round opacity-10">login</i>
-              </div>
-              <span class="nav-link-text me-1">تسجيل الدخول</span>
-            </a>
-          </li>
+
+
+
+
+
+
+          
+
           <li class="nav-item">
             <a class="nav-link " href="../pages/sign-up.html">
               <div class="text-white text-center ms-2 d-flex align-items-center justify-content-center">
@@ -122,6 +116,7 @@ onMounted(()=>{
               <span class="nav-link-text me-1">اشتراك</span>
             </a>
           </li>
+
         </ul>
       </div>
     </aside>

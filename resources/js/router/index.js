@@ -4,6 +4,7 @@ import dashBoard from "../views/main.vue" ;
 import food from "../views/food.vue" ;
 import orders from "../views/orders.vue" ;
 import pastOrder from "../views/pastOrder.vue";
+import profile from "../views/profile.vue";
 
 
 
@@ -27,6 +28,10 @@ const routes = [
         path : '/dashboard/pastOrders' ,
         name : 'pastOrders' ,
         component : pastOrder,
+    },{
+        path : '/dashboard/profile' ,
+        name : 'profile' ,
+        component : profile,
     }
 ]
 
