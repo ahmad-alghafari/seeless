@@ -1,7 +1,7 @@
 
 <script setup >
 import axios from 'axios';
-import {defineProps  , ref  } from 'vue';
+import {defineProps  , ref ,onMounted } from 'vue';
 
 const props = defineProps({
   categories: Object, // Ensure categories is defined as an Array
@@ -14,8 +14,14 @@ const props = defineProps({
 const cart = ref({});
 const total = ref(0);
 const isempty = ref(true);
+const APP_URL = ref();
 
 
+onMounted(()=>{
+  if(window.APP_URL){
+    APP_URL.value = window.APP_URL;
+  }
+})
 const display_flex = (id) => {
   add_increase(id);
   const div_by_id = document.getElementById(`${id}`);
@@ -89,7 +95,7 @@ const submit = () => {
 };
 
 const sendRequest = async () => {
-    axios.post('http://127.0.0.1:8000/api/orders/add' 
+    axios.post(APP_URL.value+':8000/api/orders/add' 
       ,{
         resturant_id  : props.resturantId , 
         table_number : props.tableNumber ,
@@ -167,16 +173,17 @@ const isEmpty = () => {
                     <p>
                       {{ fod.description }}
                     </p>
-                    <p>
-                      {{ fod.availability }}
+                    <p v-if="fod.availability == 'availble'">
+                      متوفر
+                    </p>
+                    <p v-else>
+                      غير متوفر
                     </p>
                     
                     <div class="options">
                       <h6>
                         {{ fod.price }} SR
                       </h6>
-
-                      <!-- icon start -->
                       <a class="cart_link "  @click="display_flex(fod.id)" :style="`display: ${isAdded(fod.id)} ;`">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
                     <g>
@@ -231,32 +238,50 @@ const isEmpty = () => {
                     </g>
                   </svg>
                       </a>
-                      <!-- icon end -->
-
-                      <!-- at the bottom start -->
-                      <div class="atTheButtom" :id="fod.id"  :style="`display : ${isadded(fod.id)}`">
-                        <button type="button" id="plus" @click="add_increase(fod.id)">
-                          <i class="fa fa-plus"></i>
-                        </button>
-                        <div class="numOfCate" v-if="cart[fod.id]">
-                          <h5>{{ cart[fod.id]  }}</h5>
-                        </div>
-                        <button type="button" id="minus" @click="decreaseQuantity(fod.id)">
-                          <i class="fa fa-minus"></i>
-                        </button>
-                        <a class="delete" @click="deleteAllquantity(fod.id)" >
-                          X
-                        </a>
-                      </div> 
-                      <!-- at the bottom end -->
                     </div>
+                    <br>
+
+                    <div class="row mx-4" :id="fod.id"  :style="`display : ${isadded(fod.id)}`">
+
+                        <div class="col-2" >
+                            <a  @click="deleteAllquantity(fod.id)" >
+                              X
+                            </a>
+                        </div>
+
+                        <div class="col-2 ">
+                          <div class="d-flex justify-content-center">
+                            <button type="button" id="plus" @click="add_increase(fod.id)">
+                              <i class="fa fa-plus"></i>
+                            </button>
+                          </div>
+                        </div>
+
+                        <div class="col-4">
+                          <div >
+                            <h5>{{ cart[fod.id]  }}</h5>
+                          </div>
+                        </div>
+
+                        <div class="col-2 ">
+                          <div class="d-flex justify-content-center">
+
+                          <button type="button" id="minus" @click="decreaseQuantity(fod.id)" >
+                            <i class="fa fa-minus"></i>
+                          </button>
+                          </div>
+                        </div>
+
+                        
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
   </section>  
   <!-- fixed cart button start -->
   <button  type="button" class="floating-button btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">شراء</button>

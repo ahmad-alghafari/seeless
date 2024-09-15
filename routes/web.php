@@ -6,11 +6,11 @@ use App\Models\Food;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Spatie\FlareClient\View;
 
-// Route::get('/', function() {
-//     dd(Resturant::find(2)->User->id);
-//     return "kk"; 
-// });
+Route::get('/rrr', function() {
+    return view('auth.register');
+});
 
 
 Route::get('/service-worker.js', function() {

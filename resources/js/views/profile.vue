@@ -52,6 +52,7 @@
 
         <div class="row">
           <div class="row">
+
             <div class="col-12 col-xl-4">
               <div class="card card-plain h-100">
                 <div class="card-header pb-0 p-3">
@@ -360,10 +361,12 @@
                 </div>
               </div>
             </div>
-          </div>
-          
-        </div>
 
+          </div>
+        </div>
+        
       </div>
+
     </div>
-    </template>
+    
+</template>

@@ -1,7 +1,12 @@
 <script setup>
-import axios from 'axios';
-import { defineProps, onMounted } from 'vue';
+import { defineProps, onMounted, ref } from 'vue';
 
+const APP_URL = ref();
+onMounted(()=>{
+  if(window.APP_URL){
+    APP_URL.value = window.APP_URL;
+  }
+})
 defineProps({
   id :Number ,
   returantName : String
@@ -13,7 +18,7 @@ defineProps({
 <template>
 <div class="hero_area">
     <div class="bg-box">
-      <img src="http://127.0.0.1:8000/layouts/1/images/hero-bg.jpg" alt="">
+      <img :src="`${APP_URL}:8000/layouts/1/images/hero-bg.jpg`" alt="">
     </div>
     <!-- header section strats -->
     <header class="header_section">

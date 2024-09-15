@@ -44,18 +44,19 @@
     window.categories = @json($categories);
     window.food = @json($food);
     window.tableNumber = {{$tableNumber}} ; 
+    window.APP_URL = @json(env('APP_URL'));
   </script>
 
   <div id="app" ></div>
   <!-- jQery -->
-  <script src="http://127.0.0.1:8000/layouts/1/js/jquery-3.4.1.min.js"></script>
+  <script src="{{env('APP_URL')}}:8000/layouts/1/js/jquery-3.4.1.min.js"></script>
 
   <!-- isotope js -->
   <script src="https://unpkg.com/isotope-layout@3.0.4/dist/isotope.pkgd.min.js"></script>
 
 
   <!-- custom js -->
-  <script src="http://127.0.0.1:8000/layouts/1/js/custom.js"></script>
+  <script src="{{env('APP_URL')}}:8000/layouts/1/js/custom.js"></script>
 
   @vite('resources/js/app.js')
 </body>
