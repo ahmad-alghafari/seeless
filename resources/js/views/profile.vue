@@ -1,7 +1,16 @@
 <script setup>  
+import { onMounted, ref, onBeforeMount } from "vue";
+
+onBeforeMount(() => {
+  if (!store.state.isLoggedIn) {
+    route.push({ name: "login" });
+    store.dispatch('logout');
+  }
+});
 </script>
 <template>
-    <div class="container-fluid px-2 px-md-4">
+
+    <div class="container-fluid px-2 px-md-4" dir="ltr">
       <div class="page-header min-height-300 border-radius-xl mt-4" style="background-image: url('https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');">
         <span class="mask  bg-gradient-primary  opacity-6"></span>
       </div>
@@ -23,7 +32,8 @@
               </p>
             </div>
           </div>
-          <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
+          
+          <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-2 me-sm-0 mx-auto mt-3">
             <div class="nav-wrapper position-relative end-0">
               <ul class="nav nav-pills nav-fill p-1" role="tablist">
                 <li class="nav-item">
@@ -368,5 +378,4 @@
       </div>
 
     </div>
-    
 </template>

@@ -1,26 +1,33 @@
+// resources/js/app.js
 import './bootstrap';
-
 import { createApp } from 'vue';
-
-import dashBoard from './components_dashboard/app.vue';
-import router from './router';
+import { createI18n } from 'vue-i18n';
+import EN from './locale/en.json';
+import AR from './locale/ar.json';
 import Toast, { POSITION } from "vue-toastification";
 import "vue-toastification/dist/index.css";
+import dashBoard from './components/dashboard/app.vue';
+import router from './router'; // Import the router
+import store from './store'; // Import the store
+import Cookies from 'js-cookie'
 
 
+// Set up i18n
+const i18n = createI18n({
+  legacy: false,
+  locale: Cookies.get('locale') || 'EN',
+  fallbackLocale: 'EN', 
+  messages: {
+    EN: EN,
+    AR: AR
+  }
+});
 
-
-
-// createApp(dashBoard).use(router).use(Toast).mount('#dashboard');
-
+// Create the app and use the imported components and plugins
 const app = createApp(dashBoard);
-
-// Use the router
-app.use(router);
-
-// Use Toastification with optional configuration
+app.use(router); // Use the router
+app.use(store);  // Use the store
 app.use(Toast, {
-  // You can customize the position, duration, etc.
   position: POSITION.BOTTOM_LEFT,
   timeout: 5000, // 5 seconds
   closeOnClick: true,
@@ -34,7 +41,6 @@ app.use(Toast, {
   rtl: false,
 });
 
-// Mount the app to the DOM element with the ID 'dashboard'
+// Mount the app
+app.use(i18n);
 app.mount('#dashboard');
-
-

@@ -1,5 +1,4 @@
 # selss
-
 A system that connects the restaurant visitor with the restaurant manager to view the menu and send orders to the accountant.
 
  <img src="./images/demo1.png"  width="650" height="350"/>

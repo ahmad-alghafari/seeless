@@ -16,4 +16,8 @@ class Food extends Model
         return $this->belongsTo(Resturant::class);
     }
 
+    public function Category() : BelongsTo {
+        return $this->belongsTo(Category::class);
+    }
+
 }

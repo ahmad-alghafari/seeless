@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class QRcodeImage extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['resturant_id' , 'path' , 'table_number'];
 }
